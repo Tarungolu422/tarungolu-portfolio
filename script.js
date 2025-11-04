@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initResumeDownload();
     initProjectCards();
     initTypingEffect();
+    initCertificates();
 });
 
 // Navigation functionality
@@ -74,39 +75,17 @@ function initScrollAnimations() {
     }, observerOptions);
 
     // Observe elements for animation
-    const animateElements = document.querySelectorAll('.project-card, .skill-item, .stat, .contact-method');
+    const animateElements = document.querySelectorAll('.project-card, .skill-item, .stat, .contact-method, .cert-item');
     animateElements.forEach(el => {
         el.classList.add('fade-in');
         observer.observe(el);
     });
 }
 
-// Skill bars animation
+// Skill bars animation (removed - using card-based design now)
 function initSkillBars() {
-    const skillBars = document.querySelectorAll('.skill-progress');
-
-    const skillObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const skillBar = entry.target;
-                const width = skillBar.getAttribute('data-width');
-                skillBar.style.setProperty('--target-width', width);
-                skillBar.classList.add('animate');
-
-                // Animate the bar
-                setTimeout(() => {
-                    skillBar.style.width = width;
-                }, 100);
-
-                // Unobserve after animation
-                skillObserver.unobserve(skillBar);
-            }
-        });
-    }, { threshold: 0.5 });
-
-    skillBars.forEach(bar => {
-        skillObserver.observe(bar);
-    });
+    // Skill items will animate via scroll animations instead
+    // No longer needed since we removed progress bars
 }
 
 // Contact form functionality
@@ -276,8 +255,8 @@ function initResumeDownload() {
 
         // Create a link to download the PDF file
         const link = document.createElement('a');
-        link.href = 'Er. Tarun Kumar Rathore.pdf';
-        link.download = 'Er. Tarun Kumar Rathore.pdf';
+        link.href = 'resume/Er. Tarun Kumar Rathore.pdf';
+        link.download = 'resume/Er. Tarun Kumar Rathore.pdf';
         link.target = '_blank';
 
         // Add to DOM, click, and remove
@@ -304,25 +283,57 @@ function initProjectCards() {
     });
 }
 
-// Typing effect for hero title
+// Typing animation effect for hero subtitle
 function initTypingEffect() {
-    const heroTitle = document.querySelector('.hero-title');
-    const originalText = heroTitle.textContent;
+    const subtitleText = document.querySelector('.subtitle-text');
+    if (!subtitleText) return;
 
-    // Clear the title
-    heroTitle.textContent = '';
+    const titles = [
+        'Data Scientist & Generative AI Enthusiast',
+        'Agentic AI Specialist',
+        'Machine Learning Professional',
+        'Data Analyst Specialist',
+        'Generative AI Professional'
+    ];
 
-    let i = 0;
-    const typeWriter = () => {
-        if (i < originalText.length) {
-            heroTitle.textContent += originalText.charAt(i);
-            i++;
-            setTimeout(typeWriter, 100);
+    let currentIndex = 0;
+    let isDeleting = false;
+    let currentText = '';
+    let charIndex = 0;
+
+    function typeText() {
+        const currentTitle = titles[currentIndex];
+
+        if (!isDeleting && charIndex < currentTitle.length) {
+            // Typing forward
+            currentText = currentTitle.substring(0, charIndex + 1);
+            subtitleText.textContent = currentText;
+            charIndex++;
+            setTimeout(typeText, 100);
+        } else if (!isDeleting && charIndex === currentTitle.length) {
+            // Finished typing, wait before deleting
+            setTimeout(() => {
+                isDeleting = true;
+                typeText();
+            }, 2000); // Wait 2 seconds before deleting
+        } else if (isDeleting && charIndex > 0) {
+            // Deleting backward
+            currentText = currentTitle.substring(0, charIndex - 1);
+            subtitleText.textContent = currentText;
+            charIndex--;
+            setTimeout(typeText, 50); // Faster deletion
+        } else if (isDeleting && charIndex === 0) {
+            // Finished deleting, move to next title
+            isDeleting = false;
+            currentIndex = (currentIndex + 1) % titles.length;
+            setTimeout(typeText, 500); // Brief pause before next title
         }
-    };
+    }
 
-    // Start typing effect after a short delay
-    setTimeout(typeWriter, 1000);
+    // Start typing animation after initial delay
+    setTimeout(() => {
+        typeText();
+    }, 1000);
 }
 
 // Parallax effect for floating elements
@@ -477,3 +488,27 @@ function initParticleEffect() {
 
 // Initialize particle effect
 initParticleEffect();
+
+// Certificates functionality - open PDF on click
+function initCertificates() {
+    const certItems = document.querySelectorAll('.cert-item');
+
+    certItems.forEach(certItem => {
+        certItem.addEventListener('click', function () {
+            const pdfPath = this.getAttribute('data-pdf');
+
+            if (pdfPath) {
+                // Encode the path to handle spaces and special characters
+                const encodedPath = encodeURI(pdfPath);
+
+                // Open PDF in a new tab
+                window.open(encodedPath, '_blank');
+
+                // Show notification
+                showNotification('Opening certificate PDF...', 'success');
+            } else {
+                showNotification('Certificate PDF not found', 'error');
+            }
+        });
+    });
+}
