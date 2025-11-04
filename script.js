@@ -289,11 +289,12 @@ function initTypingEffect() {
     if (!subtitleText) return;
 
     const titles = [
-        'Data Scientist & Generative AI Enthusiast',
-        'Agentic AI Specialist',
-        'Machine Learning Professional',
+        'AI & Data Science Professional',
+        'Agentic AI Developer',
+        'Generative AI Engineer',
+        'Machine Learning Engineer',
         'Data Analyst Specialist',
-        'Generative AI Professional'
+        'Power BI Developer'
     ];
 
     let currentIndex = 0;
