@@ -289,10 +289,9 @@ function initTypingEffect() {
     if (!subtitleText) return;
 
     const titles = [
+        'Delivering Scalable ML & Agentic AI Solutions',
         'AI & Data Science Professional',
-        'Agentic AI Developer',
         'Generative AI Engineer',
-        'Machine Learning Engineer',
         'Data Analyst Specialist',
         'Power BI Developer'
     ];
