@@ -293,7 +293,8 @@ function initTypingEffect() {
         'AI & Data Science Professional',
         'Generative AI Engineer',
         'Data Analyst Specialist',
-        'Power BI Developer'
+        'Power BI Developer',
+        'SQL-Driven Solutions'
     ];
 
     let currentIndex = 0;

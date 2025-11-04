@@ -102,9 +102,9 @@ h6 {
 }
 
 .logo-img {
-    height: 70px;
+    height: 80px;
     width: auto;
-    max-height: 70px;
+    max-height: 80px;
     object-fit: contain;
     transition: transform 0.3s ease;
 }
