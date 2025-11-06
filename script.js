@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     initProjectCards();
     initTypingEffect();
     initCertificates();
+    initNumberAnimation();
+    initScrollToTop();
 });
 
 // Navigation functionality
@@ -16,18 +18,53 @@ function initNavigation() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
+    const menuClose = document.querySelector('.menu-close');
+    const menuBackdrop = document.querySelector('.menu-backdrop');
+
+    // Function to open menu
+    function openMenu() {
+        hamburger.classList.add('active');
+        navMenu.classList.add('active');
+        menuBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Function to close menu
+    function closeMenu() {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        menuBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+    }
 
     // Mobile menu toggle
     hamburger.addEventListener('click', function () {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
+        if (navMenu.classList.contains('active')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
     });
+
+    // Close button click
+    if (menuClose) {
+        menuClose.addEventListener('click', function (e) {
+            e.stopPropagation();
+            closeMenu();
+        });
+    }
+
+    // Close menu when clicking on backdrop
+    if (menuBackdrop) {
+        menuBackdrop.addEventListener('click', function () {
+            closeMenu();
+        });
+    }
 
     // Close mobile menu when clicking on a link
     navLinks.forEach(link => {
         link.addEventListener('click', function () {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+            closeMenu();
         });
     });
 
@@ -73,6 +110,13 @@ function initScrollAnimations() {
             }
         });
     }, observerOptions);
+
+    // Observe sections for fade-in animation
+    const sections = document.querySelectorAll('section:not(.hero)');
+    sections.forEach(section => {
+        section.classList.add('fade-in');
+        observer.observe(section);
+    });
 
     // Observe elements for animation
     const animateElements = document.querySelectorAll('.project-card, .skill-item, .stat, .contact-method, .cert-item');
@@ -494,22 +538,121 @@ initParticleEffect();
 function initCertificates() {
     const certItems = document.querySelectorAll('.cert-item');
 
+    if (certItems.length === 0) return;
+
     certItems.forEach(certItem => {
-        certItem.addEventListener('click', function () {
+        // Ensure we only add the listener once and only on actual clicks
+        certItem.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
             const pdfPath = this.getAttribute('data-pdf');
 
             if (pdfPath) {
                 // Encode the path to handle spaces and special characters
                 const encodedPath = encodeURI(pdfPath);
 
-                // Open PDF in a new tab
-                window.open(encodedPath, '_blank');
-
-                // Show notification
+                // Show notification first
                 showNotification('Opening certificate PDF...', 'success');
+
+                // Wait 2 seconds before opening the PDF
+                setTimeout(() => {
+                    // Open PDF in a new tab
+                    window.open(encodedPath, '_blank');
+                }, 2000);
             } else {
                 showNotification('Certificate PDF not found', 'error');
             }
+        }, { once: false, passive: false });
+    });
+}
+
+// Number animation (count-up effect) for stats
+function initNumberAnimation() {
+    const stats = document.querySelectorAll('.stat h3');
+
+    const animateNumber = (element, target, duration = 2000) => {
+        const start = 0;
+        const increment = target / (duration / 16); // 60fps
+        let current = start;
+
+        const updateNumber = () => {
+            current += increment;
+            if (current < target) {
+                element.textContent = Math.floor(current) + '+';
+                requestAnimationFrame(updateNumber);
+            } else {
+                element.textContent = target + '+';
+            }
+        };
+
+        updateNumber();
+    };
+
+    // Create intersection observer for stats
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.animated) {
+                const statElement = entry.target;
+                const text = statElement.textContent.trim();
+                const number = parseInt(text);
+
+                if (!isNaN(number)) {
+                    statElement.dataset.animated = 'true';
+                    statElement.textContent = '0+';
+                    animateNumber(statElement, number, 2000);
+                }
+            }
         });
+    }, {
+        threshold: 0.5,
+        rootMargin: '0px'
+    });
+
+    // Observe all stat numbers
+    stats.forEach(stat => {
+        statsObserver.observe(stat);
+    });
+}
+
+// Scroll to Top Button
+function initScrollToTop() {
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+
+    if (!scrollToTopBtn) return;
+
+    // Show/hide button based on scroll position
+    window.addEventListener('scroll', function () {
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    });
+
+    // Smooth and slow scroll to top when clicked
+    scrollToTopBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        const startPosition = window.pageYOffset;
+        const startTime = performance.now();
+        const duration = 2000; // 2 seconds for very slow smooth scroll
+
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function animateScroll(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = easeInOutCubic(progress);
+
+            window.scrollTo(0, startPosition * (1 - ease));
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        }
+
+        requestAnimationFrame(animateScroll);
     });
 }
