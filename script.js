@@ -638,7 +638,7 @@ function initScrollToTop() {
         
         // Detect if mobile/responsive (width <= 768px)
         const isMobile = window.innerWidth <= 768;
-        const duration = isMobile ? 800 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
+        const duration = isMobile ? 2000 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
         
         function easeInOutCubic(t) {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
