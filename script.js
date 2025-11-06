@@ -618,9 +618,9 @@ function initNumberAnimation() {
 // Scroll to Top Button
 function initScrollToTop() {
     const scrollToTopBtn = document.getElementById('scrollToTop');
-
+    
     if (!scrollToTopBtn) return;
-
+    
     // Show/hide button based on scroll position
     window.addEventListener('scroll', function () {
         if (window.pageYOffset > 300) {
@@ -629,30 +629,33 @@ function initScrollToTop() {
             scrollToTopBtn.classList.remove('visible');
         }
     });
-
-    // Smooth and slow scroll to top when clicked
+    
+    // Smooth scroll to top when clicked - faster on mobile
     scrollToTopBtn.addEventListener('click', function (e) {
         e.preventDefault();
         const startPosition = window.pageYOffset;
         const startTime = performance.now();
-        const duration = 2000; // 2 seconds for very slow smooth scroll
-
+        
+        // Detect if mobile/responsive (width <= 768px)
+        const isMobile = window.innerWidth <= 768;
+        const duration = isMobile ? 800 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
+        
         function easeInOutCubic(t) {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
-
+        
         function animateScroll(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const ease = easeInOutCubic(progress);
-
+            
             window.scrollTo(0, startPosition * (1 - ease));
-
+            
             if (progress < 1) {
                 requestAnimationFrame(animateScroll);
             }
         }
-
+        
         requestAnimationFrame(animateScroll);
     });
 }
