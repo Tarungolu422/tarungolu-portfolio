@@ -569,7 +569,7 @@ function initCertificates() {
                 // Show notification first
                 showNotification('Opening certificate PDF...', 'success');
 
-                // Wait 1.5 seconds before opening the PDF
+                // Wait 1 seconds before opening the PDF
                 setTimeout(() => {
                     // Open PDF in a new tab
                     window.open(encodedPath, '_blank');
