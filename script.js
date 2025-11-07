@@ -571,7 +571,7 @@ function initCertificates() {
                 setTimeout(() => {
                     // Open PDF in a new tab
                     window.open(encodedPath, '_blank');
-                }, 1500);
+                }, 1000);
             } else {
                 showNotification('Certificate PDF not found', 'error');
             }
