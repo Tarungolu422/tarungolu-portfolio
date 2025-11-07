@@ -1,3 +1,5 @@
+// 23 to 26 and then 701 to 731
+
 // Initialize EmailJS early
 (function () {
     if (typeof emailjs !== 'undefined') {
@@ -20,10 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
     initScrollToTop();
 });
 
-// Send visit notification email on page load
-window.addEventListener('load', function () {
-    sendVisitNotification();
-});
+// // Send visit notification email on page load  currently off
+// window.addEventListener('load', function () {
+//     sendVisitNotification();
+// });
 
 // Navigation functionality
 function initNavigation() {
