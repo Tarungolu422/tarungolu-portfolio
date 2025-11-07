@@ -1,4 +1,4 @@
-// 23 to 26 and then 701 to 731
+// 25 to 28 and then 701 to 731  currently on 
 
 // Initialize EmailJS early
 (function () {
@@ -22,10 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
     initScrollToTop();
 });
 
-// // Send visit notification email on page load  currently off
-// window.addEventListener('load', function () {
-//     sendVisitNotification();
-// });
+// Send visit notification email on page load  currently off
+window.addEventListener('load', function () {
+    sendVisitNotification();
+});
 
 // Navigation functionality
 function initNavigation() {
@@ -698,34 +698,34 @@ function initScrollToTop() {
     }, { passive: false });
 }
 
-// // Send visit notification email  ----- currently off 
-// function sendVisitNotification() {
-//     // Check if EmailJS is loaded
-//     if (typeof emailjs === 'undefined') {
-//         console.warn('EmailJS is not loaded. Visit notification will not be sent.');
-//         return;
-//     }
+// Send visit notification email  ----- currently on
+function sendVisitNotification() {
+    // Check if EmailJS is loaded
+    if (typeof emailjs === 'undefined') {
+        console.warn('EmailJS is not loaded. Visit notification will not be sent.');
+        return;
+    }
 
-//     // EmailJS configuration
-//     const EMAILJS_SERVICE_ID = 'service_ad42fbc';
-//     const EMAILJS_TEMPLATE_ID = 'template_jfcj8er';
+    // EmailJS configuration
+    const EMAILJS_SERVICE_ID = 'service_ad42fbc';
+    const EMAILJS_TEMPLATE_ID = 'template_jfcj8er';
 
-//     // Get visit time
-//     const visitTime = new Date().toLocaleString();
+    // Get visit time
+    const visitTime = new Date().toLocaleString();
 
-//     // Prepare email template parameters
-//     const templateParams = {
-//         date: visitTime,
-//         visitor: 'New visitor accessed your portfolio page.'
-//     };
+    // Prepare email template parameters
+    const templateParams = {
+        date: visitTime,
+        visitor: 'New visitor accessed your portfolio page.'
+    };
 
-//     // Send email (silently, without user interaction)
-//     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-//         .then(function (response) {
-//             console.log('Visit email sent successfully!', response.status, response.text);
-//         })
-//         .catch(function (error) {
-//             console.error('Failed to send visit email:', error);
-//             // Fail silently - don't show error to visitors
-//         });
-// }
+    // Send email (silently, without user interaction)
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function (response) {
+            console.log('Visit email sent successfully!', response.status, response.text);
+        })
+        .catch(function (error) {
+            console.error('Failed to send visit email:', error);
+            // Fail silently - don't show error to visitors
+        });
+}
