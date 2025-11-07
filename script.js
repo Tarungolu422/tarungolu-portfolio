@@ -1,3 +1,10 @@
+// Initialize EmailJS early
+(function () {
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init('O_ciyEh_y9ZLeTCWp');
+    }
+})();
+
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize all functionality
@@ -11,6 +18,11 @@ document.addEventListener('DOMContentLoaded', function () {
     initCertificates();
     initNumberAnimation();
     initScrollToTop();
+});
+
+// Send visit notification email on page load
+window.addEventListener('load', function () {
+    sendVisitNotification();
 });
 
 // Navigation functionality
@@ -555,11 +567,11 @@ function initCertificates() {
                 // Show notification first
                 showNotification('Opening certificate PDF...', 'success');
 
-                // Wait 2 seconds before opening the PDF
+                // Wait 1.5 seconds before opening the PDF
                 setTimeout(() => {
                     // Open PDF in a new tab
                     window.open(encodedPath, '_blank');
-                }, 2000);
+                }, 1500);
             } else {
                 showNotification('Certificate PDF not found', 'error');
             }
@@ -618,9 +630,9 @@ function initNumberAnimation() {
 // Scroll to Top Button
 function initScrollToTop() {
     const scrollToTopBtn = document.getElementById('scrollToTop');
-    
+
     if (!scrollToTopBtn) return;
-    
+
     // Show/hide button based on scroll position
     window.addEventListener('scroll', function () {
         if (window.pageYOffset > 300) {
@@ -629,33 +641,89 @@ function initScrollToTop() {
             scrollToTopBtn.classList.remove('visible');
         }
     });
-    
-    // Smooth scroll to top when clicked - faster on mobile
-    scrollToTopBtn.addEventListener('click', function (e) {
-        e.preventDefault();
+
+    // Function to handle scroll to top
+    function scrollToTop() {
         const startPosition = window.pageYOffset;
         const startTime = performance.now();
-        
+
         // Detect if mobile/responsive (width <= 768px)
         const isMobile = window.innerWidth <= 768;
-        const duration = isMobile ? 2000 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
-        
+        const duration = isMobile ? 800 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
+
         function easeInOutCubic(t) {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
-        
+
         function animateScroll(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const ease = easeInOutCubic(progress);
-            
+
             window.scrollTo(0, startPosition * (1 - ease));
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animateScroll);
             }
         }
-        
+
         requestAnimationFrame(animateScroll);
+    }
+
+    // Handle click event
+    scrollToTopBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        scrollToTop();
     });
+
+    // Handle touch events for better mobile responsiveness (no delay)
+    let touchStartTime = 0;
+    scrollToTopBtn.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        touchStartTime = Date.now();
+    }, { passive: false });
+
+    scrollToTopBtn.addEventListener('touchend', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const touchDuration = Date.now() - touchStartTime;
+        // Only trigger if it's a quick tap (not a long press)
+        if (touchDuration < 300) {
+            scrollToTop();
+        }
+    }, { passive: false });
+}
+
+// Send visit notification email
+function sendVisitNotification() {
+    // Check if EmailJS is loaded
+    if (typeof emailjs === 'undefined') {
+        console.warn('EmailJS is not loaded. Visit notification will not be sent.');
+        return;
+    }
+
+    // EmailJS configuration
+    const EMAILJS_SERVICE_ID = 'service_ad42fbc';
+    const EMAILJS_TEMPLATE_ID = 'template_jfcj8er';
+
+    // Get visit time
+    const visitTime = new Date().toLocaleString();
+
+    // Prepare email template parameters
+    const templateParams = {
+        date: visitTime,
+        visitor: 'New visitor accessed your portfolio page.'
+    };
+
+    // Send email (silently, without user interaction)
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function (response) {
+            console.log('Visit email sent successfully!', response.status, response.text);
+        })
+        .catch(function (error) {
+            console.error('Failed to send visit email:', error);
+            // Fail silently - don't show error to visitors
+        });
 }

@@ -1988,6 +1988,10 @@ section:not(.hero).visible {
     align-items: center;
     justify-content: center;
     animation: floatUpDown 2s ease-in-out infinite;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .scroll-to-top.visible {
@@ -2048,6 +2052,8 @@ section:not(.hero).visible {
         width: 45px;
         height: 45px;
         font-size: 1.1rem;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .cert-item:hover {
