@@ -1,5 +1,3 @@
-// 81 to 84 and then 701 to 731  currently on 
-
 // Initialize EmailJS early
 (function () {
     if (typeof emailjs !== 'undefined') {
@@ -68,20 +66,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize all functionality
     initNavigation();
     initScrollAnimations();
-    initSkillBars();
     initContactForm();
     initResumeDownload();
-    initProjectCards();
     initTypingEffect();
     initCertificates();
     initNumberAnimation();
     initScrollToTop();
 });
 
-// // Send visit notification email on page load  currently off
-// window.addEventListener('load', function () {
-//     sendVisitNotification();
-// });
+// Send visit notification email on page load
+window.addEventListener('load', sendVisitNotification);
 
 // Navigation functionality
 function initNavigation() {
@@ -151,61 +145,49 @@ function initNavigation() {
         });
     });
 
-    // Optimized navbar background on scroll with throttling
-    let ticking = false;
-    function updateNavbar() {
-        const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 100) {
-            navbar.style.background = 'rgba(10, 10, 10, 0.98)';
-        } else {
-            navbar.style.background = 'rgba(10, 10, 10, 0.95)';
-        }
-        ticking = false;
-    }
-
-    window.addEventListener('scroll', function () {
-        if (!ticking) {
-            window.requestAnimationFrame(updateNavbar);
-            ticking = true;
-        }
-    }, { passive: true });
+    // Optimized navbar background on scroll - combined with other scroll handlers
+    // This will be handled by the unified scroll handler below
 }
 
-// Enhanced Scroll animations with staggered effects
+// Enhanced Scroll animations with mobile optimizations
 function initScrollAnimations() {
-    // Improved observer options for better performance
+    const isMobile = window.innerWidth <= 768;
+
+    // Optimized observer options for mobile (less work)
     const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
+        threshold: isMobile ? 0.05 : 0.1, // Lower threshold on mobile
+        rootMargin: isMobile ? '0px 0px -50px 0px' : '0px 0px -100px 0px' // Less margin on mobile
     };
 
-    // Main observer for sections
+    // Main observer for sections - optimized delays for both mobile and desktop
     const sectionObserver = new IntersectionObserver(function (entries) {
         entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
-                // Add staggered delay for smooth sequential appearance
+                // Reduced delays for faster appearance on both platforms
+                const delay = isMobile ? index * 20 : index * 30; // Faster on desktop too
                 setTimeout(() => {
                     entry.target.classList.add('visible');
-                }, index * 50);
+                }, delay);
                 sectionObserver.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    // Enhanced observer for elements with staggered animation
+    // Enhanced observer for elements - optimized for both platforms
     const elementObserver = new IntersectionObserver(function (entries) {
         entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
-                // Staggered animation for better visual flow
+                // Reduced stagger for faster animations
+                const staggerDelay = isMobile ? (index % 6) * 50 : (index % 6) * 60; // Faster on desktop
                 setTimeout(() => {
                     entry.target.classList.add('visible');
-                }, (index % 6) * 100); // Stagger every 6 items
+                }, staggerDelay);
                 elementObserver.unobserve(entry.target);
             }
         });
     }, {
-        threshold: 0.15,
-        rootMargin: '0px 0px -80px 0px'
+        threshold: isMobile ? 0.1 : 0.12, // Slightly lower on desktop for faster detection
+        rootMargin: isMobile ? '0px 0px -40px 0px' : '0px 0px -60px 0px' // Less margin on desktop
     });
 
     // Observe sections for fade-in animation
@@ -215,54 +197,24 @@ function initScrollAnimations() {
         sectionObserver.observe(section);
     });
 
-    // Observe project cards with staggered effect
-    const projectCards = document.querySelectorAll('.project-card');
-    projectCards.forEach(card => {
-        card.classList.add('fade-in');
-        elementObserver.observe(card);
-    });
+    // Observe all animated elements with a single loop
+    const animatedSelectors = [
+        '.project-card',
+        '.skill-item',
+        '.stat',
+        '.contact-method',
+        '.cert-item',
+        '.skills-category'
+    ];
 
-    // Observe skill items
-    const skillItems = document.querySelectorAll('.skill-item');
-    skillItems.forEach(item => {
-        item.classList.add('fade-in');
-        elementObserver.observe(item);
-    });
-
-    // Observe stats
-    const stats = document.querySelectorAll('.stat');
-    stats.forEach(stat => {
-        stat.classList.add('fade-in');
-        elementObserver.observe(stat);
-    });
-
-    // Observe contact methods
-    const contactMethods = document.querySelectorAll('.contact-method');
-    contactMethods.forEach(method => {
-        method.classList.add('fade-in');
-        elementObserver.observe(method);
-    });
-
-    // Observe certificate items
-    const certItems = document.querySelectorAll('.cert-item');
-    certItems.forEach(cert => {
-        cert.classList.add('fade-in');
-        elementObserver.observe(cert);
-    });
-
-    // Observe skills categories
-    const skillCategories = document.querySelectorAll('.skills-category');
-    skillCategories.forEach(category => {
-        category.classList.add('fade-in');
-        elementObserver.observe(category);
+    animatedSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(element => {
+            element.classList.add('fade-in');
+            elementObserver.observe(element);
+        });
     });
 }
 
-// Skill bars animation (removed - using card-based design now)
-function initSkillBars() {
-    // Skill items will animate via scroll animations instead
-    // No longer needed since we removed progress bars
-}
 
 // Contact form functionality
 function initContactForm() {
@@ -317,8 +269,7 @@ function initContactForm() {
                     throw new Error(data.message || 'Form submission failed');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
+            .catch(() => {
                 // Fallback to mailto if Web3Forms fails
                 const emailSubject = encodeURIComponent(`New Contact from ${name} - Portfolio Website`);
                 const emailBody = encodeURIComponent(`Hello Tarun,
@@ -445,20 +396,6 @@ function initResumeDownload() {
     });
 }
 
-// Project cards interaction
-function initProjectCards() {
-    const projectCards = document.querySelectorAll('.project-card');
-
-    projectCards.forEach(card => {
-        card.addEventListener('mouseenter', function () {
-            this.style.transform = 'translateY(-10px) scale(1.02)';
-        });
-
-        card.addEventListener('mouseleave', function () {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-}
 
 // Typing animation effect for hero subtitle
 function initTypingEffect() {
@@ -514,17 +451,52 @@ function initTypingEffect() {
     }, 1000);
 }
 
-// Optimized parallax effect for floating elements with performance
+// Optimized parallax effect - disabled on mobile, optimized for desktop
 function initParallaxEffect() {
+    // Disable parallax on mobile devices for better scroll performance
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        return; // Skip parallax on mobile
+    }
+
     const floatingElements = document.querySelectorAll('.element');
+    if (floatingElements.length === 0) return;
+
+    // Cache elements and pre-calculate speeds
+    const elements = Array.from(floatingElements).map((element, index) => ({
+        element: element,
+        speed: (index + 1) * 0.1
+    }));
+
     let parallaxTicking = false;
+    let lastScrollY = 0;
+    let lastParallaxY = 0;
 
     function updateParallax() {
         const scrolled = window.pageYOffset;
+
+        // Only update if scroll changed significantly (reduces work)
+        const scrollDiff = Math.abs(scrolled - lastScrollY);
+        if (scrollDiff < 3) {
+            parallaxTicking = false;
+            return;
+        }
+
+        lastScrollY = scrolled;
         const rate = scrolled * -0.5;
 
-        floatingElements.forEach((element, index) => {
-            const speed = (index + 1) * 0.1;
+        // Only update if parallax position changed significantly
+        const parallaxDiff = Math.abs(rate - lastParallaxY);
+        if (parallaxDiff < 0.5) {
+            parallaxTicking = false;
+            return;
+        }
+
+        lastParallaxY = rate;
+
+        // Batch DOM updates
+        elements.forEach(({ element, speed }) => {
             element.style.transform = `translateY(${rate * speed}px)`;
         });
         parallaxTicking = false;
@@ -565,6 +537,101 @@ window.addEventListener('load', function () {
     }, 100);
 });
 
+// Unified optimized scroll handler for all scroll operations - desktop & mobile
+let unifiedScrollTicking = false;
+let lastScrollY = 0;
+let lastNavbarState = false;
+let lastButtonState = false;
+
+// Cache DOM elements for better performance
+let cachedNavbar = null;
+let cachedProgressBar = null;
+let cachedScrollToTopBtn = null;
+let cachedDocHeight = 0;
+
+function cacheDOMElements() {
+    cachedNavbar = document.querySelector('.navbar');
+    cachedProgressBar = document.querySelector('.scroll-progress');
+    cachedScrollToTopBtn = document.getElementById('scrollToTop');
+    cachedDocHeight = document.body.scrollHeight - window.innerHeight;
+}
+
+// Cache elements on load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cacheDOMElements);
+} else {
+    cacheDOMElements();
+}
+
+// Recalculate doc height on resize (throttled)
+let resizeTicking = false;
+window.addEventListener('resize', function () {
+    if (!resizeTicking) {
+        requestAnimationFrame(() => {
+            cachedDocHeight = document.body.scrollHeight - window.innerHeight;
+            resizeTicking = false;
+        });
+        resizeTicking = true;
+    }
+}, { passive: true });
+
+function unifiedScrollHandler() {
+    const scrollY = window.pageYOffset || window.scrollTop;
+    const isMobile = window.innerWidth <= 768;
+    const scrollDiff = Math.abs(scrollY - lastScrollY);
+
+    // Only update if scroll changed significantly (reduces work)
+    if (scrollDiff < 1) {
+        unifiedScrollTicking = false;
+        return;
+    }
+
+    // Navbar background update (only when state changes)
+    if (cachedNavbar) {
+        const shouldBeDark = scrollY > 100;
+        if (shouldBeDark !== lastNavbarState) {
+            cachedNavbar.style.background = shouldBeDark
+                ? 'rgba(10, 10, 10, 0.98)'
+                : 'rgba(10, 10, 10, 0.95)';
+            lastNavbarState = shouldBeDark;
+        }
+    }
+
+    // Scroll progress bar (throttled for both mobile and desktop)
+    const progressThreshold = isMobile ? 15 : 5; // Desktop: update more frequently but still throttled
+    if (scrollDiff > progressThreshold && cachedProgressBar) {
+        const scrollPercent = (scrollY / cachedDocHeight) * 100;
+        cachedProgressBar.style.width = scrollPercent + '%';
+    }
+
+    // Scroll to top button visibility (only when state changes)
+    if (cachedScrollToTopBtn) {
+        const shouldBeVisible = scrollY > 300;
+        if (shouldBeVisible !== lastButtonState) {
+            if (shouldBeVisible) {
+                cachedScrollToTopBtn.classList.add('visible');
+            } else {
+                cachedScrollToTopBtn.classList.remove('visible');
+            }
+            lastButtonState = shouldBeVisible;
+        }
+    }
+
+    lastScrollY = scrollY;
+    unifiedScrollTicking = false;
+}
+
+// Make it accessible globally for scroll-to-top button
+window.unifiedScrollHandler = unifiedScrollHandler;
+
+// Single optimized scroll listener for all scroll operations
+window.addEventListener('scroll', function () {
+    if (!unifiedScrollTicking) {
+        window.requestAnimationFrame(unifiedScrollHandler);
+        unifiedScrollTicking = true;
+    }
+}, { passive: true });
+
 // Add scroll progress indicator
 function initScrollProgress() {
     const progressBar = document.createElement('div');
@@ -577,16 +644,10 @@ function initScrollProgress() {
         height: 3px;
         background: linear-gradient(135deg, #00d4aa, #0099cc);
         z-index: 10000;
-        transition: width 0.1s ease;
+        transition: width 0.2s ease;
+        will-change: width;
     `;
     document.body.appendChild(progressBar);
-
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset;
-        const docHeight = document.body.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        progressBar.style.width = scrollPercent + '%';
-    });
 }
 
 // Initialize scroll progress
@@ -679,29 +740,17 @@ function initCertificates() {
     if (certItems.length === 0) return;
 
     certItems.forEach(certItem => {
-        // Ensure we only add the listener once and only on actual clicks
         certItem.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
-
             const pdfPath = this.getAttribute('data-pdf');
-
             if (pdfPath) {
-                // Encode the path to handle spaces and special characters
-                const encodedPath = encodeURI(pdfPath);
-
-                // Show notification first
                 showNotification('Opening certificate PDF...', 'success');
-
-                // Wait 1 seconds before opening the PDF
-                setTimeout(() => {
-                    // Open PDF in a new tab
-                    window.open(encodedPath, '_blank');
-                }, 1000);
+                setTimeout(() => window.open(encodeURI(pdfPath), '_blank'), 1000);
             } else {
                 showNotification('Certificate PDF not found', 'error');
             }
-        }, { once: false, passive: false });
+        }, { passive: false });
     });
 }
 
@@ -768,19 +817,8 @@ function initScrollToTop() {
         }
     }
 
-    // Optimized scroll listener with throttling for better performance
-    let scrollTicking = false;
-    function handleScroll() {
-        toggleScrollButton();
-        scrollTicking = false;
-    }
-
-    window.addEventListener('scroll', function () {
-        if (!scrollTicking) {
-            window.requestAnimationFrame(handleScroll);
-            scrollTicking = true;
-        }
-    }, { passive: true });
+    // Scroll button visibility is handled by unified scroll handler
+    // No need for separate listener
 
     // Check on page load
     toggleScrollButton();
@@ -846,13 +884,9 @@ function initScrollToTop() {
     }, { passive: false });
 }
 
-// Send visit notification email  ----- currently on
+// Send visit notification email
 function sendVisitNotification() {
-    // Check if EmailJS is loaded
-    if (typeof emailjs === 'undefined') {
-        console.warn('EmailJS is not loaded. Visit notification will not be sent.');
-        return;
-    }
+    if (typeof emailjs === 'undefined') return;
 
     // EmailJS configuration
     const EMAILJS_SERVICE_ID = 'service_ad42fbc';
@@ -867,14 +901,9 @@ function sendVisitNotification() {
         visitor: 'New visitor accessed your portfolio page.'
     };
 
-    // Send email (silently, without user interaction)
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-        .then(function (response) {
-            console.log('Visit email sent successfully!', response.status, response.text);
-        })
-        .catch(function (error) {
-            console.error('Failed to send visit email:', error);
-            // Fail silently - don't show error to visitors
-        });
+    // Send email silently
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams).catch(() => {
+        // Fail silently
+    });
 }
 
