@@ -630,45 +630,51 @@ function initNumberAnimation() {
 }
 
 function initScrollToTop() {
-    const scrollToTopBtn = document.getElementById('scrollToTop');
-    if (!scrollToTopBtn) return;
+  const scrollToTopBtn = document.getElementById('scrollToTop');
+  if (!scrollToTopBtn) return;
 
-    // Show/hide button
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            scrollToTopBtn.classList.add('visible');
-        } else {
-            scrollToTopBtn.classList.remove('visible');
-        }
-    });
+  // Show/hide button
+  window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 300) {
+      scrollToTopBtn.classList.add('visible');
+    } else {
+      scrollToTopBtn.classList.remove('visible');
+    }
+  });
 
-    // Scroll to top smoothly
-    const scrollToTop = () => {
-        const start = window.scrollY;
-        const startTime = performance.now();
-        const duration = window.innerWidth <= 768 ? 400 : 1000; // faster mobile
+  // Smooth scroll function
+  function scrollToTop() {
+    const start = window.scrollY;
+    const startTime = performance.now();
+    const duration = window.innerWidth <= 768 ? 350 : 900; // faster mobile scroll
 
-        function easeOutQuad(t) {
-            return t * (2 - t);
-        }
+    function easeOutQuad(t) {
+      return t * (2 - t);
+    }
 
-        function animateScroll(now) {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = easeOutQuad(progress);
-            window.scrollTo(0, start * (1 - eased));
-            if (progress < 1) requestAnimationFrame(animateScroll);
-        }
+    function animateScroll(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutQuad(progress);
+      window.scrollTo(0, start * (1 - eased));
+      if (progress < 1) requestAnimationFrame(animateScroll);
+    }
 
-        requestAnimationFrame(animateScroll);
-    };
+    requestAnimationFrame(animateScroll);
+  }
 
-    // Desktop click
-    scrollToTopBtn.addEventListener('click', scrollToTop);
+  // ✅ Desktop Click
+  scrollToTopBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    scrollToTop();
+  });
 
-    // Mobile tap — instant response, no delay
-    scrollToTopBtn.addEventListener('touchend', scrollToTop, { passive: true });
+  // ✅ Mobile Tap — completely instant, no hold delay
+  scrollToTopBtn.addEventListener('touchstart', (e) => {
+    scrollToTop();
+  }, { passive: true });
 }
+
 
 
 // // Send visit notification email  ----- currently off 

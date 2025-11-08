@@ -2054,8 +2054,10 @@ section:not(.hero).visible {
         height: 45px;
         font-size: 1.1rem;
         /* touch-action: manipulation; */
-        animation: none !important; /* Disable float motion on mobile */
+        animation: none; /* Disable float motion on mobile */
         -webkit-tap-highlight-color: transparent;
+        pointer-events: auto !important;
+
     }
 
     .cert-item:hover {
