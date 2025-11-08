@@ -1,3 +1,4 @@
+// 78 to 80 currently off 
 // Initialize EmailJS early
 (function () {
     if (typeof emailjs !== 'undefined') {
@@ -74,8 +75,8 @@ document.addEventListener('DOMContentLoaded', function () {
     initScrollToTop();
 });
 
-// Send visit notification email on page load
-window.addEventListener('load', sendVisitNotification);
+// // Send visit notification email on page load
+// window.addEventListener('load', sendVisitNotification);
 
 // Navigation functionality
 function initNavigation() {
