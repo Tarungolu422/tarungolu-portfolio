@@ -7,6 +7,41 @@
     }
 })();
 
+// Universal smooth scroll function with easing
+function smoothScrollTo(targetPosition, duration = 800) {
+    const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+    const distance = targetPosition - startPosition;
+    const startTime = performance.now();
+    let animationFrameId;
+
+    // Easing function for smooth acceleration and deceleration
+    function easeInOutCubic(t) {
+        return t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function animateScroll(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = easeInOutCubic(progress);
+
+        const currentPosition = startPosition + (distance * ease);
+        window.scrollTo(0, currentPosition);
+
+        if (progress < 1) {
+            animationFrameId = requestAnimationFrame(animateScroll);
+        }
+    }
+
+    // Cancel any existing scroll animation
+    if (window.currentScrollAnimation) {
+        cancelAnimationFrame(window.currentScrollAnimation);
+    }
+
+    window.currentScrollAnimation = requestAnimationFrame(animateScroll);
+}
+
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize all functionality
@@ -82,7 +117,7 @@ function initNavigation() {
         });
     });
 
-    // Smooth scroll for navigation links
+    // Enhanced smooth scroll for navigation links with custom animation
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
@@ -90,53 +125,115 @@ function initNavigation() {
             const targetSection = document.querySelector(targetId);
 
             if (targetSection) {
-                const offsetTop = targetSection.offsetTop - 80;
-                window.scrollTo({
-                    top: offsetTop,
-                    behavior: 'smooth'
-                });
+                smoothScrollTo(targetSection.offsetTop - 80, 800);
             }
         });
     });
 
-    // Navbar background on scroll
-    window.addEventListener('scroll', function () {
+    // Optimized navbar background on scroll with throttling
+    let ticking = false;
+    function updateNavbar() {
         const navbar = document.querySelector('.navbar');
         if (window.scrollY > 100) {
             navbar.style.background = 'rgba(10, 10, 10, 0.98)';
         } else {
             navbar.style.background = 'rgba(10, 10, 10, 0.95)';
         }
-    });
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', function () {
+        if (!ticking) {
+            window.requestAnimationFrame(updateNavbar);
+            ticking = true;
+        }
+    }, { passive: true });
 }
 
-// Scroll animations
+// Enhanced Scroll animations with staggered effects
 function initScrollAnimations() {
+    // Improved observer options for better performance
     const observerOptions = {
         threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        rootMargin: '0px 0px -100px 0px'
     };
 
-    const observer = new IntersectionObserver(function (entries) {
-        entries.forEach(entry => {
+    // Main observer for sections
+    const sectionObserver = new IntersectionObserver(function (entries) {
+        entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+                // Add staggered delay for smooth sequential appearance
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                }, index * 50);
+                sectionObserver.unobserve(entry.target);
             }
         });
     }, observerOptions);
+
+    // Enhanced observer for elements with staggered animation
+    const elementObserver = new IntersectionObserver(function (entries) {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                // Staggered animation for better visual flow
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                }, (index % 6) * 100); // Stagger every 6 items
+                elementObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -80px 0px'
+    });
 
     // Observe sections for fade-in animation
     const sections = document.querySelectorAll('section:not(.hero)');
     sections.forEach(section => {
         section.classList.add('fade-in');
-        observer.observe(section);
+        sectionObserver.observe(section);
     });
 
-    // Observe elements for animation
-    const animateElements = document.querySelectorAll('.project-card, .skill-item, .stat, .contact-method, .cert-item');
-    animateElements.forEach(el => {
-        el.classList.add('fade-in');
-        observer.observe(el);
+    // Observe project cards with staggered effect
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+        card.classList.add('fade-in');
+        elementObserver.observe(card);
+    });
+
+    // Observe skill items
+    const skillItems = document.querySelectorAll('.skill-item');
+    skillItems.forEach(item => {
+        item.classList.add('fade-in');
+        elementObserver.observe(item);
+    });
+
+    // Observe stats
+    const stats = document.querySelectorAll('.stat');
+    stats.forEach(stat => {
+        stat.classList.add('fade-in');
+        elementObserver.observe(stat);
+    });
+
+    // Observe contact methods
+    const contactMethods = document.querySelectorAll('.contact-method');
+    contactMethods.forEach(method => {
+        method.classList.add('fade-in');
+        elementObserver.observe(method);
+    });
+
+    // Observe certificate items
+    const certItems = document.querySelectorAll('.cert-item');
+    certItems.forEach(cert => {
+        cert.classList.add('fade-in');
+        elementObserver.observe(cert);
+    });
+
+    // Observe skills categories
+    const skillCategories = document.querySelectorAll('.skills-category');
+    skillCategories.forEach(category => {
+        category.classList.add('fade-in');
+        elementObserver.observe(category);
     });
 }
 
@@ -231,8 +328,9 @@ This message was sent from your portfolio contact form.`);
         contactForm.reset();
         showNotification('Thanks for reaching out! I\'ll get back to you soon.', 'success');
 
-        // Scroll to success message
-        formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Scroll to success message smoothly
+        const formSuccessTop = formSuccess.getBoundingClientRect().top + window.pageYOffset - 100;
+        smoothScrollTo(formSuccessTop, 600);
 
         // Hide success message after 5 seconds
         setTimeout(() => {
@@ -395,11 +493,12 @@ function initTypingEffect() {
     }, 1000);
 }
 
-// Parallax effect for floating elements
+// Optimized parallax effect for floating elements with performance
 function initParallaxEffect() {
     const floatingElements = document.querySelectorAll('.element');
+    let parallaxTicking = false;
 
-    window.addEventListener('scroll', () => {
+    function updateParallax() {
         const scrolled = window.pageYOffset;
         const rate = scrolled * -0.5;
 
@@ -407,23 +506,27 @@ function initParallaxEffect() {
             const speed = (index + 1) * 0.1;
             element.style.transform = `translateY(${rate * speed}px)`;
         });
-    });
+        parallaxTicking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!parallaxTicking) {
+            window.requestAnimationFrame(updateParallax);
+            parallaxTicking = true;
+        }
+    }, { passive: true });
 }
 
 // Initialize parallax effect
 initParallaxEffect();
 
-// Smooth scroll for all anchor links
+// Enhanced smooth scroll for all anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            const offsetTop = target.offsetTop - 80;
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
+            smoothScrollTo(target.offsetTop - 80, 800);
         }
     });
 });
@@ -636,63 +739,62 @@ function initScrollToTop() {
     if (!scrollToTopBtn) return;
 
     // Show/hide button based on scroll position
-    window.addEventListener('scroll', function () {
+    function toggleScrollButton() {
         if (window.pageYOffset > 300) {
             scrollToTopBtn.classList.add('visible');
         } else {
             scrollToTopBtn.classList.remove('visible');
         }
-    });
-
-    // Function to handle scroll to top
-    function scrollToTop() {
-        const startPosition = window.pageYOffset;
-        const startTime = performance.now();
-
-        // Detect if mobile/responsive (width <= 768px)
-        const isMobile = window.innerWidth <= 768;
-        const duration = isMobile ? 800 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
-
-        function easeInOutCubic(t) {
-            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        }
-
-        function animateScroll(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const ease = easeInOutCubic(progress);
-
-            window.scrollTo(0, startPosition * (1 - ease));
-
-            if (progress < 1) {
-                requestAnimationFrame(animateScroll);
-            }
-        }
-
-        requestAnimationFrame(animateScroll);
     }
 
-    // Handle click event
+    // Optimized scroll listener with throttling for better performance
+    let scrollTicking = false;
+    function handleScroll() {
+        toggleScrollButton();
+        scrollTicking = false;
+    }
+
+    window.addEventListener('scroll', function () {
+        if (!scrollTicking) {
+            window.requestAnimationFrame(handleScroll);
+            scrollTicking = true;
+        }
+    }, { passive: true });
+
+    // Check on page load
+    toggleScrollButton();
+
+    // Function to handle smooth scroll to top with perfect animation
+    function scrollToTop() {
+        smoothScrollTo(0, 1000); // Smooth 1-second scroll to top
+    }
+
+    // Handle click event - primary interaction
     scrollToTopBtn.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
         scrollToTop();
     });
 
-    // Handle touch events for better mobile responsiveness (no delay)
+    // Handle touch events for mobile devices
     let touchStartTime = 0;
+    let touchMoved = false;
+
     scrollToTopBtn.addEventListener('touchstart', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
         touchStartTime = Date.now();
-    }, { passive: false });
+        touchMoved = false;
+    }, { passive: true });
+
+    scrollToTopBtn.addEventListener('touchmove', function (e) {
+        touchMoved = true;
+    }, { passive: true });
 
     scrollToTopBtn.addEventListener('touchend', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
         const touchDuration = Date.now() - touchStartTime;
-        // Only trigger if it's a quick tap (not a long press)
-        if (touchDuration < 300) {
+        // Only trigger if it's a quick tap and didn't move
+        if (!touchMoved && touchDuration < 300) {
+            e.preventDefault();
+            e.stopPropagation();
             scrollToTop();
         }
     }, { passive: false });
