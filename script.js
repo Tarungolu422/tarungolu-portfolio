@@ -293,7 +293,7 @@ function showNotification(message, type = 'info') {
     // Animate in
     setTimeout(() => {
         notification.style.transform = 'translateX(0)';
-    }, 100);
+    }, 0);
 
     // Auto remove after 5 seconds
     setTimeout(() => {
@@ -301,7 +301,7 @@ function showNotification(message, type = 'info') {
         setTimeout(() => {
             notification.remove();
         }, 300);
-    }, 5000);
+    }, 1500);
 }
 
 // Resume download functionality
@@ -573,7 +573,7 @@ function initCertificates() {
                 setTimeout(() => {
                     // Open PDF in a new tab
                     window.open(encodedPath, '_blank');
-                }, 1000);
+                }, 700);
             } else {
                 showNotification('Certificate PDF not found', 'error');
             }
@@ -629,14 +629,12 @@ function initNumberAnimation() {
     });
 }
 
-// Scroll to Top Button
 function initScrollToTop() {
     const scrollToTopBtn = document.getElementById('scrollToTop');
-
     if (!scrollToTopBtn) return;
 
-    // Show/hide button based on scroll position
-    window.addEventListener('scroll', function () {
+    // Show/hide button
+    window.addEventListener('scroll', () => {
         if (window.pageYOffset > 300) {
             scrollToTopBtn.classList.add('visible');
         } else {
@@ -644,59 +642,34 @@ function initScrollToTop() {
         }
     });
 
-    // Function to handle scroll to top
-    function scrollToTop() {
-        const startPosition = window.pageYOffset;
+    // Scroll to top smoothly
+    const scrollToTop = () => {
+        const start = window.scrollY;
         const startTime = performance.now();
+        const duration = window.innerWidth <= 768 ? 400 : 1000; // faster mobile
 
-        // Detect if mobile/responsive (width <= 768px)
-        const isMobile = window.innerWidth <= 768;
-        const duration = isMobile ? 800 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
-
-        function easeInOutCubic(t) {
-            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        function easeOutQuad(t) {
+            return t * (2 - t);
         }
 
-        function animateScroll(currentTime) {
-            const elapsed = currentTime - startTime;
+        function animateScroll(now) {
+            const elapsed = now - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const ease = easeInOutCubic(progress);
-
-            window.scrollTo(0, startPosition * (1 - ease));
-
-            if (progress < 1) {
-                requestAnimationFrame(animateScroll);
-            }
+            const eased = easeOutQuad(progress);
+            window.scrollTo(0, start * (1 - eased));
+            if (progress < 1) requestAnimationFrame(animateScroll);
         }
 
         requestAnimationFrame(animateScroll);
-    }
+    };
 
-    // Handle click event
-    scrollToTopBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        scrollToTop();
-    });
+    // Desktop click
+    scrollToTopBtn.addEventListener('click', scrollToTop);
 
-    // Handle touch events for better mobile responsiveness (no delay)
-    let touchStartTime = 0;
-    scrollToTopBtn.addEventListener('touchstart', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        touchStartTime = Date.now();
-    }, { passive: false });
-
-    scrollToTopBtn.addEventListener('touchend', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const touchDuration = Date.now() - touchStartTime;
-        // Only trigger if it's a quick tap (not a long press)
-        if (touchDuration < 300) {
-            scrollToTop();
-        }
-    }, { passive: false });
+    // Mobile tap — instant response, no delay
+    scrollToTopBtn.addEventListener('touchend', scrollToTop, { passive: true });
 }
+
 
 // // Send visit notification email  ----- currently off 
 // function sendVisitNotification() {

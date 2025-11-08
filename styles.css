@@ -1,3 +1,4 @@
+
 /* Reset and Base Styles */
 * {
     margin: 0;
@@ -2024,7 +2025,7 @@ section:not(.hero).visible {
 
 /* Arrow icon animation */
 .scroll-to-top i {
-    animation: arrowMove 2s ease-in-out infinite;
+    animation: arrowMove 1s ease-in-out infinite;
 }
 
 @keyframes arrowMove {
@@ -2052,7 +2053,8 @@ section:not(.hero).visible {
         width: 45px;
         height: 45px;
         font-size: 1.1rem;
-        touch-action: manipulation;
+        /* touch-action: manipulation; */
+        animation: none !important; /* Disable float motion on mobile */
         -webkit-tap-highlight-color: transparent;
     }
 
@@ -2101,3 +2103,4 @@ section:not(.hero).visible {
     opacity: 1;
     transform: translateY(0);
 }
+
