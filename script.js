@@ -1,4 +1,4 @@
-// 25 to 28 and then 701 to 731  currently on 
+// 81 to 84 and then 701 to 731  currently on 
 
 // Initialize EmailJS early
 (function () {
@@ -78,10 +78,10 @@ document.addEventListener('DOMContentLoaded', function () {
     initScrollToTop();
 });
 
-// Send visit notification email on page load  currently off
-window.addEventListener('load', function () {
-    sendVisitNotification();
-});
+// // Send visit notification email on page load  currently off
+// window.addEventListener('load', function () {
+//     sendVisitNotification();
+// });
 
 // Navigation functionality
 function initNavigation() {
