@@ -2020,6 +2020,9 @@ section:not(.hero).visible {
     user-select: none;
     -webkit-user-select: none;
     pointer-events: none;
+    /* Optimize for instant click response */
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
 }
 
 .scroll-to-top.visible {

@@ -7,12 +7,26 @@
     }
 })();
 
-// Universal smooth scroll function with easing
+// Universal smooth scroll function with easing - optimized for instant start
 function smoothScrollTo(targetPosition, duration = 800) {
     const startPosition = window.pageYOffset || document.documentElement.scrollTop;
     const distance = targetPosition - startPosition;
+
+    // If distance is very small, scroll immediately
+    if (Math.abs(distance) < 10) {
+        window.scrollTo(0, targetPosition);
+        return;
+    }
+
+    // Cancel any existing scroll animation first
+    if (window.currentScrollAnimation) {
+        cancelAnimationFrame(window.currentScrollAnimation);
+        window.currentScrollAnimation = null;
+    }
+
     const startTime = performance.now();
     let animationFrameId;
+    let lastPosition = startPosition;
 
     // Easing function for smooth acceleration and deceleration
     function easeInOutCubic(t) {
@@ -27,19 +41,26 @@ function smoothScrollTo(targetPosition, duration = 800) {
         const ease = easeInOutCubic(progress);
 
         const currentPosition = startPosition + (distance * ease);
-        window.scrollTo(0, currentPosition);
+
+        // Only scroll if position actually changed (prevents unnecessary repaints)
+        if (Math.abs(currentPosition - lastPosition) > 0.5) {
+            window.scrollTo(0, currentPosition);
+            lastPosition = currentPosition;
+        }
 
         if (progress < 1) {
             animationFrameId = requestAnimationFrame(animateScroll);
+            window.currentScrollAnimation = animationFrameId;
+        } else {
+            // Ensure we end exactly at target
+            window.scrollTo(0, targetPosition);
+            window.currentScrollAnimation = null;
         }
     }
 
-    // Cancel any existing scroll animation
-    if (window.currentScrollAnimation) {
-        cancelAnimationFrame(window.currentScrollAnimation);
-    }
-
-    window.currentScrollAnimation = requestAnimationFrame(animateScroll);
+    // Start immediately with first frame - no delay
+    animationFrameId = requestAnimationFrame(animateScroll);
+    window.currentScrollAnimation = animationFrameId;
 }
 
 // DOM Content Loaded
@@ -764,39 +785,64 @@ function initScrollToTop() {
     // Check on page load
     toggleScrollButton();
 
-    // Function to handle smooth scroll to top with perfect animation
-    function scrollToTop() {
-        smoothScrollTo(0, 1000); // Smooth 1-second scroll to top
+    // Function to handle smooth scroll to top - starts immediately
+    function scrollToTop(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        // Start scroll immediately without any delay
+        smoothScrollTo(0, 1000);
     }
 
-    // Handle click event - primary interaction
-    scrollToTopBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        scrollToTop();
-    });
+    // Track if scroll is already in progress to prevent multiple triggers
+    let isScrolling = false;
 
-    // Handle touch events for mobile devices
-    let touchStartTime = 0;
+    // Handle click event - immediate response
+    scrollToTopBtn.addEventListener('click', function (e) {
+        if (!isScrolling) {
+            isScrolling = true;
+            scrollToTop(e);
+            // Reset flag after animation completes
+            setTimeout(() => {
+                isScrolling = false;
+            }, 1100);
+        }
+    }, { passive: false });
+
+    // Handle touch events - start immediately on touchstart for instant response
+    let touchStarted = false;
     let touchMoved = false;
 
     scrollToTopBtn.addEventListener('touchstart', function (e) {
-        touchStartTime = Date.now();
+        touchStarted = true;
         touchMoved = false;
-    }, { passive: true });
+        // Start scroll immediately on touchstart for instant response
+        if (!isScrolling) {
+            isScrolling = true;
+            e.preventDefault();
+            e.stopPropagation();
+            scrollToTop(e);
+            setTimeout(() => {
+                isScrolling = false;
+            }, 1100);
+        }
+    }, { passive: false });
 
     scrollToTopBtn.addEventListener('touchmove', function (e) {
-        touchMoved = true;
+        if (touchStarted) {
+            touchMoved = true;
+        }
     }, { passive: true });
 
     scrollToTopBtn.addEventListener('touchend', function (e) {
-        const touchDuration = Date.now() - touchStartTime;
-        // Only trigger if it's a quick tap and didn't move
-        if (!touchMoved && touchDuration < 300) {
+        // Prevent default behavior that might cause delay
+        if (touchStarted && !touchMoved) {
             e.preventDefault();
             e.stopPropagation();
-            scrollToTop();
         }
+        touchStarted = false;
+        touchMoved = false;
     }, { passive: false });
 }
 
@@ -831,3 +877,4 @@ function sendVisitNotification() {
             // Fail silently - don't show error to visitors
         });
 }
+
