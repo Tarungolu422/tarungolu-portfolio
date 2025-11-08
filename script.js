@@ -1,3 +1,5 @@
+// 23 to 26 and then 701 to 731
+
 // Initialize EmailJS early
 (function () {
     if (typeof emailjs !== 'undefined') {
@@ -5,77 +7,25 @@
     }
 })();
 
-// Universal smooth scroll function with easing - optimized for instant start
-function smoothScrollTo(targetPosition, duration = 800) {
-    const startPosition = window.pageYOffset || document.documentElement.scrollTop;
-    const distance = targetPosition - startPosition;
-
-    // If distance is very small, scroll immediately
-    if (Math.abs(distance) < 10) {
-        window.scrollTo(0, targetPosition);
-        return;
-    }
-
-    // Cancel any existing scroll animation first
-    if (window.currentScrollAnimation) {
-        cancelAnimationFrame(window.currentScrollAnimation);
-        window.currentScrollAnimation = null;
-    }
-
-    const startTime = performance.now();
-    let animationFrameId;
-    let lastPosition = startPosition;
-
-    // Easing function for smooth acceleration and deceleration
-    function easeInOutCubic(t) {
-        return t < 0.5
-            ? 4 * t * t * t
-            : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    }
-
-    function animateScroll(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const ease = easeInOutCubic(progress);
-
-        const currentPosition = startPosition + (distance * ease);
-
-        // Only scroll if position actually changed (prevents unnecessary repaints)
-        if (Math.abs(currentPosition - lastPosition) > 0.5) {
-            window.scrollTo(0, currentPosition);
-            lastPosition = currentPosition;
-        }
-
-        if (progress < 1) {
-            animationFrameId = requestAnimationFrame(animateScroll);
-            window.currentScrollAnimation = animationFrameId;
-        } else {
-            // Ensure we end exactly at target
-            window.scrollTo(0, targetPosition);
-            window.currentScrollAnimation = null;
-        }
-    }
-
-    // Start immediately with first frame - no delay
-    animationFrameId = requestAnimationFrame(animateScroll);
-    window.currentScrollAnimation = animationFrameId;
-}
-
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize all functionality
     initNavigation();
     initScrollAnimations();
+    initSkillBars();
     initContactForm();
     initResumeDownload();
+    initProjectCards();
     initTypingEffect();
     initCertificates();
     initNumberAnimation();
     initScrollToTop();
 });
 
-// Send visit notification email on page load
-window.addEventListener('load', sendVisitNotification);
+// // Send visit notification email on page load  currently off
+// window.addEventListener('load', function () {
+//     sendVisitNotification();
+// });
 
 // Navigation functionality
 function initNavigation() {
@@ -132,7 +82,7 @@ function initNavigation() {
         });
     });
 
-    // Enhanced smooth scroll for navigation links with custom animation
+    // Smooth scroll for navigation links
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
@@ -140,81 +90,61 @@ function initNavigation() {
             const targetSection = document.querySelector(targetId);
 
             if (targetSection) {
-                smoothScrollTo(targetSection.offsetTop - 80, 800);
+                const offsetTop = targetSection.offsetTop - 80;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
             }
         });
     });
 
-    // Optimized navbar background on scroll - combined with other scroll handlers
-    // This will be handled by the unified scroll handler below
+    // Navbar background on scroll
+    window.addEventListener('scroll', function () {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 100) {
+            navbar.style.background = 'rgba(10, 10, 10, 0.98)';
+        } else {
+            navbar.style.background = 'rgba(10, 10, 10, 0.95)';
+        }
+    });
 }
 
-// Enhanced Scroll animations with mobile optimizations
+// Scroll animations
 function initScrollAnimations() {
-    const isMobile = window.innerWidth <= 768;
-
-    // Optimized observer options for mobile (less work)
     const observerOptions = {
-        threshold: isMobile ? 0.05 : 0.1, // Lower threshold on mobile
-        rootMargin: isMobile ? '0px 0px -50px 0px' : '0px 0px -100px 0px' // Less margin on mobile
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
     };
 
-    // Main observer for sections - optimized delays for both mobile and desktop
-    const sectionObserver = new IntersectionObserver(function (entries) {
-        entries.forEach((entry, index) => {
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Reduced delays for faster appearance on both platforms
-                const delay = isMobile ? index * 20 : index * 30; // Faster on desktop too
-                setTimeout(() => {
-                    entry.target.classList.add('visible');
-                }, delay);
-                sectionObserver.unobserve(entry.target);
+                entry.target.classList.add('visible');
             }
         });
     }, observerOptions);
-
-    // Enhanced observer for elements - optimized for both platforms
-    const elementObserver = new IntersectionObserver(function (entries) {
-        entries.forEach((entry, index) => {
-            if (entry.isIntersecting) {
-                // Reduced stagger for faster animations
-                const staggerDelay = isMobile ? (index % 6) * 50 : (index % 6) * 60; // Faster on desktop
-                setTimeout(() => {
-                    entry.target.classList.add('visible');
-                }, staggerDelay);
-                elementObserver.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: isMobile ? 0.1 : 0.12, // Slightly lower on desktop for faster detection
-        rootMargin: isMobile ? '0px 0px -40px 0px' : '0px 0px -60px 0px' // Less margin on desktop
-    });
 
     // Observe sections for fade-in animation
     const sections = document.querySelectorAll('section:not(.hero)');
     sections.forEach(section => {
         section.classList.add('fade-in');
-        sectionObserver.observe(section);
+        observer.observe(section);
     });
 
-    // Observe all animated elements with a single loop
-    const animatedSelectors = [
-        '.project-card',
-        '.skill-item',
-        '.stat',
-        '.contact-method',
-        '.cert-item',
-        '.skills-category'
-    ];
-
-    animatedSelectors.forEach(selector => {
-        document.querySelectorAll(selector).forEach(element => {
-            element.classList.add('fade-in');
-            elementObserver.observe(element);
-        });
+    // Observe elements for animation
+    const animateElements = document.querySelectorAll('.project-card, .skill-item, .stat, .contact-method, .cert-item');
+    animateElements.forEach(el => {
+        el.classList.add('fade-in');
+        observer.observe(el);
     });
 }
 
+// Skill bars animation (removed - using card-based design now)
+function initSkillBars() {
+    // Skill items will animate via scroll animations instead
+    // No longer needed since we removed progress bars
+}
 
 // Contact form functionality
 function initContactForm() {
@@ -269,7 +199,8 @@ function initContactForm() {
                     throw new Error(data.message || 'Form submission failed');
                 }
             })
-            .catch(() => {
+            .catch(error => {
+                console.error('Error:', error);
                 // Fallback to mailto if Web3Forms fails
                 const emailSubject = encodeURIComponent(`New Contact from ${name} - Portfolio Website`);
                 const emailBody = encodeURIComponent(`Hello Tarun,
@@ -300,9 +231,8 @@ This message was sent from your portfolio contact form.`);
         contactForm.reset();
         showNotification('Thanks for reaching out! I\'ll get back to you soon.', 'success');
 
-        // Scroll to success message smoothly
-        const formSuccessTop = formSuccess.getBoundingClientRect().top + window.pageYOffset - 100;
-        smoothScrollTo(formSuccessTop, 600);
+        // Scroll to success message
+        formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         // Hide success message after 5 seconds
         setTimeout(() => {
@@ -396,6 +326,20 @@ function initResumeDownload() {
     });
 }
 
+// Project cards interaction
+function initProjectCards() {
+    const projectCards = document.querySelectorAll('.project-card');
+
+    projectCards.forEach(card => {
+        card.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+
+        card.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+}
 
 // Typing animation effect for hero subtitle
 function initTypingEffect() {
@@ -451,75 +395,35 @@ function initTypingEffect() {
     }, 1000);
 }
 
-// Optimized parallax effect - disabled on mobile, optimized for desktop
+// Parallax effect for floating elements
 function initParallaxEffect() {
-    // Disable parallax on mobile devices for better scroll performance
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile) {
-        return; // Skip parallax on mobile
-    }
-
     const floatingElements = document.querySelectorAll('.element');
-    if (floatingElements.length === 0) return;
-
-    // Cache elements and pre-calculate speeds
-    const elements = Array.from(floatingElements).map((element, index) => ({
-        element: element,
-        speed: (index + 1) * 0.1
-    }));
-
-    let parallaxTicking = false;
-    let lastScrollY = 0;
-    let lastParallaxY = 0;
-
-    function updateParallax() {
-        const scrolled = window.pageYOffset;
-
-        // Only update if scroll changed significantly (reduces work)
-        const scrollDiff = Math.abs(scrolled - lastScrollY);
-        if (scrollDiff < 3) {
-            parallaxTicking = false;
-            return;
-        }
-
-        lastScrollY = scrolled;
-        const rate = scrolled * -0.5;
-
-        // Only update if parallax position changed significantly
-        const parallaxDiff = Math.abs(rate - lastParallaxY);
-        if (parallaxDiff < 0.5) {
-            parallaxTicking = false;
-            return;
-        }
-
-        lastParallaxY = rate;
-
-        // Batch DOM updates
-        elements.forEach(({ element, speed }) => {
-            element.style.transform = `translateY(${rate * speed}px)`;
-        });
-        parallaxTicking = false;
-    }
 
     window.addEventListener('scroll', () => {
-        if (!parallaxTicking) {
-            window.requestAnimationFrame(updateParallax);
-            parallaxTicking = true;
-        }
-    }, { passive: true });
+        const scrolled = window.pageYOffset;
+        const rate = scrolled * -0.5;
+
+        floatingElements.forEach((element, index) => {
+            const speed = (index + 1) * 0.1;
+            element.style.transform = `translateY(${rate * speed}px)`;
+        });
+    });
 }
 
 // Initialize parallax effect
 initParallaxEffect();
 
-// Enhanced smooth scroll for all anchor links
+// Smooth scroll for all anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            smoothScrollTo(target.offsetTop - 80, 800);
+            const offsetTop = target.offsetTop - 80;
+            window.scrollTo({
+                top: offsetTop,
+                behavior: 'smooth'
+            });
         }
     });
 });
@@ -537,101 +441,6 @@ window.addEventListener('load', function () {
     }, 100);
 });
 
-// Unified optimized scroll handler for all scroll operations - desktop & mobile
-let unifiedScrollTicking = false;
-let lastScrollY = 0;
-let lastNavbarState = false;
-let lastButtonState = false;
-
-// Cache DOM elements for better performance
-let cachedNavbar = null;
-let cachedProgressBar = null;
-let cachedScrollToTopBtn = null;
-let cachedDocHeight = 0;
-
-function cacheDOMElements() {
-    cachedNavbar = document.querySelector('.navbar');
-    cachedProgressBar = document.querySelector('.scroll-progress');
-    cachedScrollToTopBtn = document.getElementById('scrollToTop');
-    cachedDocHeight = document.body.scrollHeight - window.innerHeight;
-}
-
-// Cache elements on load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', cacheDOMElements);
-} else {
-    cacheDOMElements();
-}
-
-// Recalculate doc height on resize (throttled)
-let resizeTicking = false;
-window.addEventListener('resize', function () {
-    if (!resizeTicking) {
-        requestAnimationFrame(() => {
-            cachedDocHeight = document.body.scrollHeight - window.innerHeight;
-            resizeTicking = false;
-        });
-        resizeTicking = true;
-    }
-}, { passive: true });
-
-function unifiedScrollHandler() {
-    const scrollY = window.pageYOffset || window.scrollTop;
-    const isMobile = window.innerWidth <= 768;
-    const scrollDiff = Math.abs(scrollY - lastScrollY);
-
-    // Only update if scroll changed significantly (reduces work)
-    if (scrollDiff < 1) {
-        unifiedScrollTicking = false;
-        return;
-    }
-
-    // Navbar background update (only when state changes)
-    if (cachedNavbar) {
-        const shouldBeDark = scrollY > 100;
-        if (shouldBeDark !== lastNavbarState) {
-            cachedNavbar.style.background = shouldBeDark
-                ? 'rgba(10, 10, 10, 0.98)'
-                : 'rgba(10, 10, 10, 0.95)';
-            lastNavbarState = shouldBeDark;
-        }
-    }
-
-    // Scroll progress bar (throttled for both mobile and desktop)
-    const progressThreshold = isMobile ? 15 : 5; // Desktop: update more frequently but still throttled
-    if (scrollDiff > progressThreshold && cachedProgressBar) {
-        const scrollPercent = (scrollY / cachedDocHeight) * 100;
-        cachedProgressBar.style.width = scrollPercent + '%';
-    }
-
-    // Scroll to top button visibility (only when state changes)
-    if (cachedScrollToTopBtn) {
-        const shouldBeVisible = scrollY > 300;
-        if (shouldBeVisible !== lastButtonState) {
-            if (shouldBeVisible) {
-                cachedScrollToTopBtn.classList.add('visible');
-            } else {
-                cachedScrollToTopBtn.classList.remove('visible');
-            }
-            lastButtonState = shouldBeVisible;
-        }
-    }
-
-    lastScrollY = scrollY;
-    unifiedScrollTicking = false;
-}
-
-// Make it accessible globally for scroll-to-top button
-window.unifiedScrollHandler = unifiedScrollHandler;
-
-// Single optimized scroll listener for all scroll operations
-window.addEventListener('scroll', function () {
-    if (!unifiedScrollTicking) {
-        window.requestAnimationFrame(unifiedScrollHandler);
-        unifiedScrollTicking = true;
-    }
-}, { passive: true });
-
 // Add scroll progress indicator
 function initScrollProgress() {
     const progressBar = document.createElement('div');
@@ -644,10 +453,16 @@ function initScrollProgress() {
         height: 3px;
         background: linear-gradient(135deg, #00d4aa, #0099cc);
         z-index: 10000;
-        transition: width 0.2s ease;
-        will-change: width;
+        transition: width 0.1s ease;
     `;
     document.body.appendChild(progressBar);
+
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        progressBar.style.width = scrollPercent + '%';
+    });
 }
 
 // Initialize scroll progress
@@ -740,17 +555,29 @@ function initCertificates() {
     if (certItems.length === 0) return;
 
     certItems.forEach(certItem => {
+        // Ensure we only add the listener once and only on actual clicks
         certItem.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
+
             const pdfPath = this.getAttribute('data-pdf');
+
             if (pdfPath) {
+                // Encode the path to handle spaces and special characters
+                const encodedPath = encodeURI(pdfPath);
+
+                // Show notification first
                 showNotification('Opening certificate PDF...', 'success');
-                setTimeout(() => window.open(encodeURI(pdfPath), '_blank'), 1000);
+
+                // Wait 1 seconds before opening the PDF
+                setTimeout(() => {
+                    // Open PDF in a new tab
+                    window.open(encodedPath, '_blank');
+                }, 1000);
             } else {
                 showNotification('Certificate PDF not found', 'error');
             }
-        }, { passive: false });
+        }, { once: false, passive: false });
     });
 }
 
@@ -809,101 +636,96 @@ function initScrollToTop() {
     if (!scrollToTopBtn) return;
 
     // Show/hide button based on scroll position
-    function toggleScrollButton() {
+    window.addEventListener('scroll', function () {
         if (window.pageYOffset > 300) {
             scrollToTopBtn.classList.add('visible');
         } else {
             scrollToTopBtn.classList.remove('visible');
         }
-    }
+    });
 
-    // Scroll button visibility is handled by unified scroll handler
-    // No need for separate listener
+    // Function to handle scroll to top
+    function scrollToTop() {
+        const startPosition = window.pageYOffset;
+        const startTime = performance.now();
 
-    // Check on page load
-    toggleScrollButton();
+        // Detect if mobile/responsive (width <= 768px)
+        const isMobile = window.innerWidth <= 768;
+        const duration = isMobile ? 800 : 2000; // Fast on mobile (0.8s), slow on desktop (2s)
 
-    // Function to handle smooth scroll to top - starts immediately
-    function scrollToTop(e) {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         }
-        // Start scroll immediately without any delay
-        smoothScrollTo(0, 1000);
+
+        function animateScroll(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = easeInOutCubic(progress);
+
+            window.scrollTo(0, startPosition * (1 - ease));
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            }
+        }
+
+        requestAnimationFrame(animateScroll);
     }
 
-    // Track if scroll is already in progress to prevent multiple triggers
-    let isScrolling = false;
-
-    // Handle click event - immediate response
+    // Handle click event
     scrollToTopBtn.addEventListener('click', function (e) {
-        if (!isScrolling) {
-            isScrolling = true;
-            scrollToTop(e);
-            // Reset flag after animation completes
-            setTimeout(() => {
-                isScrolling = false;
-            }, 1100);
-        }
-    }, { passive: false });
+        e.preventDefault();
+        e.stopPropagation();
+        scrollToTop();
+    });
 
-    // Handle touch events - start immediately on touchstart for instant response
-    let touchStarted = false;
-    let touchMoved = false;
-
+    // Handle touch events for better mobile responsiveness (no delay)
+    let touchStartTime = 0;
     scrollToTopBtn.addEventListener('touchstart', function (e) {
-        touchStarted = true;
-        touchMoved = false;
-        // Start scroll immediately on touchstart for instant response
-        if (!isScrolling) {
-            isScrolling = true;
-            e.preventDefault();
-            e.stopPropagation();
-            scrollToTop(e);
-            setTimeout(() => {
-                isScrolling = false;
-            }, 1100);
-        }
+        e.preventDefault();
+        e.stopPropagation();
+        touchStartTime = Date.now();
     }, { passive: false });
-
-    scrollToTopBtn.addEventListener('touchmove', function (e) {
-        if (touchStarted) {
-            touchMoved = true;
-        }
-    }, { passive: true });
 
     scrollToTopBtn.addEventListener('touchend', function (e) {
-        // Prevent default behavior that might cause delay
-        if (touchStarted && !touchMoved) {
-            e.preventDefault();
-            e.stopPropagation();
+        e.preventDefault();
+        e.stopPropagation();
+        const touchDuration = Date.now() - touchStartTime;
+        // Only trigger if it's a quick tap (not a long press)
+        if (touchDuration < 300) {
+            scrollToTop();
         }
-        touchStarted = false;
-        touchMoved = false;
     }, { passive: false });
 }
 
-// Send visit notification email
-function sendVisitNotification() {
-    if (typeof emailjs === 'undefined') return;
+// // Send visit notification email  ----- currently off 
+// function sendVisitNotification() {
+//     // Check if EmailJS is loaded
+//     if (typeof emailjs === 'undefined') {
+//         console.warn('EmailJS is not loaded. Visit notification will not be sent.');
+//         return;
+//     }
 
-    // EmailJS configuration
-    const EMAILJS_SERVICE_ID = 'service_ad42fbc';
-    const EMAILJS_TEMPLATE_ID = 'template_jfcj8er';
+//     // EmailJS configuration
+//     const EMAILJS_SERVICE_ID = 'service_ad42fbc';
+//     const EMAILJS_TEMPLATE_ID = 'template_jfcj8er';
 
-    // Get visit time
-    const visitTime = new Date().toLocaleString();
+//     // Get visit time
+//     const visitTime = new Date().toLocaleString();
 
-    // Prepare email template parameters
-    const templateParams = {
-        date: visitTime,
-        visitor: 'New visitor accessed your portfolio page.'
-    };
+//     // Prepare email template parameters
+//     const templateParams = {
+//         date: visitTime,
+//         visitor: 'New visitor accessed your portfolio page.'
+//     };
 
-    // Send email silently
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams).catch(() => {
-        // Fail silently
-    });
-}
-
+//     // Send email (silently, without user interaction)
+//     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+//         .then(function (response) {
+//             console.log('Visit email sent successfully!', response.status, response.text);
+//         })
+//         .catch(function (error) {
+//             console.error('Failed to send visit email:', error);
+//             // Fail silently - don't show error to visitors
+//         });
+// }
