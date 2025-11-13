@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Send visit notification email on page load  currently off
-window.addEventListener('load', function () {
-    sendVisitNotification();
-});
+// window.addEventListener('load', function () {
+//     sendVisitNotification();
+// });
 
 // Navigation functionality
 function initNavigation() {
