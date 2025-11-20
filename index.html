@@ -134,8 +134,46 @@
     <section id="projects" class="projects">
         <div class="container">
             <h2 class="section-title">Featured Projects</h2>
+
+            <!-- 🔥 FILTER BUTTONS -->
+            <div class="project-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="dashboard">Dashboards</button>
+                <button class="filter-btn" data-filter="ml">Machine Learning</button>
+                <button class="filter-btn" data-filter="nlp">NLP</button>
+                <button class="filter-btn" data-filter="genai">Generative AI</button>
+                <button class="filter-btn" data-filter="opencv">OpenCV</button>
+            </div>
+
             <div class="projects-grid">
-                <div class="project-card" data-category="ml">
+
+                <!-- OPENCV -->
+                <div class="project-card show" data-category="opencv">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-cubes"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>3D Bounding Box Detection & Tracking in Videos </h3>
+                        <p>Real-time 3D detection of shoe, cup, chair, and camera objects in video using MediaPipe
+                            Objectron, generating accurate 3D bounding boxes for object size, orientation, and position
+                            tracking.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">CV2</span>
+                            <span class="tech-tag">MediaPipe</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-weatherapi-dataanalytics-activity-7375863857782620160-zK3e?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link">
+                                <i class="fas fa-external-link-alt"></i> Linked In Post
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card" data-category="dashboard">
                     <div class="project-image">
                         <div class="project-icon">
                             <i class="fas fa-cloud-sun-rain"></i>
@@ -163,7 +201,7 @@
                     </div>
                 </div>
 
-                <div class="project-card" data-category="forecasting">
+                <div class="project-card" data-category="ml">
                     <div class="project-image">
                         <div class="project-icon">
                             <i class="fas fa-book"></i>
@@ -190,7 +228,7 @@
                     </div>
                 </div>
 
-                <div class="project-card" data-category="visualization">
+                <div class="project-card" data-category="dashboard">
                     <div class="project-image">
                         <div class="project-icon">
                             <i class="fa-solid fa-chart-line"></i>
@@ -217,7 +255,7 @@
                     </div>
                 </div>
 
-                <div class="project-card" data-category="clustering">
+                <div class="project-card" data-category="ml">
                     <div class="project-image">
                         <div class="project-icon">
                             <i class="fa-solid fa-utensils"></i> <i class="fa-regular fa-face-smile"></i>
@@ -244,7 +282,7 @@
                     </div>
                 </div>
 
-                <div class="project-card" data-category="deep-learning">
+                <div class="project-card" data-category="nlp">
                     <div class="project-image">
                         <div class="project-icon">
                             <i class="fa-solid fa-language"></i> <i class="fa-solid fa-right-left"></i></i>
@@ -271,31 +309,50 @@
                     </div>
                 </div>
 
-                <div class="project-card" data-category="ai">
+                <!-- OPENCV -->
+
+                <div class="project-card show" data-category="opencv">
                     <div class="project-image">
-                        <div class="project-icon">
-                            <i class="fa-solid fa-laptop-code"></i>
-                        </div>
+                        <div class="project-icon"><i class="fas fa-user"></i> <i class="fas fa-hand-peace"></i></div>
                     </div>
                     <div class="project-content">
-                        <h3>Data Science Intern – Slash Mark</h3>
-                        <p>Completed diverse machine learning and data analysis projects using Python, demonstrating
-                            strong skills in modeling, visualization, and real-world problem-solving.</p>
+                        <h3>Facial & Hand Landmark Tracking System </h3>
+                        <p>To develop a high-performance, real-time application using MediaPipe's Vision Tasks
+                            (specifically Face Landmarker and Gesture Recognizer) to enable touchless user interaction
+                            by simultaneously tracking facial features and hand gestures from a live video stream.</p>
                         <div class="project-tech">
-                            <span class="tech-tag">Python</span>
-                            <span class="tech-tag">Machine Learning</span>
-                            <span class="tech-tag">Nlp</span>
+                            <span class="tech-tag">CV2</span>
+                            <span class="tech-tag">MediaPipe</span>
+                            <span class="tech-tag">Streamlit</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/Tarungolu422/Slash_Mark/tree/main" class="project-link">
-                                <i class="fab fa-github"></i> Code
-                            </a>
-                            <a href="#" class="project-link">
-                                <i class="fas fa-external-link-alt"></i> Demo
-                            </a>
+                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
                         </div>
                     </div>
                 </div>
+
+                <div class="project-card show" data-category="opencv">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-user-secret"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Face Transformation</h3>
+                        <p>Developed a real-time facial analysis system using MediaPipe Face Landmarker, capturing 478 3D landmarks and blendshape expressions to enable precise, low-latency facial feature tracking.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">CV2</span>
+                            <span class="tech-tag">MediaPipe</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             </div>
             <div class="projects-footer">
                 <p class="projects-footer-text">

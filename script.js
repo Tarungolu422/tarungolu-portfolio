@@ -339,6 +339,59 @@ function initProjectCards() {
     });
 }
 
+// in below edit 
+function initProjectFilters() {
+  const filterButtons = document.querySelectorAll(".filter-btn");
+  const projects = document.querySelectorAll(".project-card");
+
+  if (!filterButtons.length || !projects.length) {
+    console.warn("❌ No filter buttons or project cards found.");
+    return;
+  }
+
+  function showProjects(filter) {
+    let visible = 0;
+
+    projects.forEach(card => {
+      const match = filter === "all" || card.dataset.category === filter;
+
+      if (filter === "all") {
+        if (visible < 6) {
+          card.classList.remove("hide");
+          card.classList.add("show");
+          visible++;
+        } else {
+          card.classList.remove("show");
+          card.classList.add("hide");
+        }
+      } else {
+        if (match) {
+          card.classList.remove("hide");
+          card.classList.add("show");
+        } else {
+          card.classList.remove("show");
+          card.classList.add("hide");
+        }
+      }
+    });
+  }
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      showProjects(btn.dataset.filter);
+    });
+  });
+
+  // DEFAULT → ONLY 6 PROJECTS
+  showProjects("all");
+}
+
+document.addEventListener("DOMContentLoaded", initProjectFilters);
+
+//  edit completely
+
 // Typing animation effect for hero subtitle
 function initTypingEffect() {
     const subtitleText = document.querySelector('.subtitle-text');
@@ -706,3 +759,4 @@ function sendVisitNotification() {
             // Fail silently - don't show error to visitors
         });
 }
+
