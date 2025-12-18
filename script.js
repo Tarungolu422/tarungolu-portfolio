@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Send visit notification email on page load  currently off
-// window.addEventListener('load', function () {
-//     sendVisitNotification();
-// });
+window.addEventListener('load', function () {
+    sendVisitNotification();
+});
 
 // Navigation functionality
 function initNavigation() {
@@ -305,22 +305,43 @@ function showNotification(message, type = 'info') {
 // Resume download functionality
 function initResumeDownload() {
     const downloadBtn = document.getElementById('downloadBtn');
+    const previewOverlay = document.getElementById('certPreviewOverlay');
+    const previewFrame = document.getElementById('certPreviewFrame');
+
+    if (!downloadBtn) return;
 
     downloadBtn.addEventListener('click', function (e) {
         e.preventDefault();
 
-        // Create a link to download the PDF file
-        const link = document.createElement('a');
-        link.href = 'resume/Er. Tarun Kumar Rathore.pdf';
-        link.download = 'resume/Er. Tarun Kumar Rathore.pdf';
-        link.target = '_blank';
+        if (!previewOverlay || !previewFrame) {
+            // Fallback: direct download if preview overlay is missing
+            const link = document.createElement('a');
+            link.href = 'resume/Er. Tarun Kumar Rathore.pdf';
+            link.download = 'Er. Tarun Kumar Rathore.pdf';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return;
+        }
 
-        // Add to DOM, click, and remove
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const pdfPath = 'resume/Er. Tarun Kumar Rathore.pdf';
+        const encodedPath = encodeURI(pdfPath);
 
-        showNotification('Resume download started!', 'success');
+        // Set context to resume and adjust button label
+        currentPreviewContext = 'resume';
+        const labelSpan = document.querySelector('#certPreviewOpenBtn span');
+        if (labelSpan) {
+            labelSpan.textContent = 'Download Resume (PDF)';
+        }
+
+        // Show shared preview overlay in loading state (no page lock)
+        previewOverlay.classList.add('active');
+        previewOverlay.classList.add('loading');
+
+        // Reset src so load event always fires
+        previewFrame.src = '';
+        previewFrame.src = encodedPath;
     });
 }
 
@@ -341,51 +362,51 @@ function initProjectCards() {
 
 // in below edit 
 function initProjectFilters() {
-  const filterButtons = document.querySelectorAll(".filter-btn");
-  const projects = document.querySelectorAll(".project-card");
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const projects = document.querySelectorAll(".project-card");
 
-  if (!filterButtons.length || !projects.length) {
-    console.warn("❌ No filter buttons or project cards found.");
-    return;
-  }
+    if (!filterButtons.length || !projects.length) {
+        console.warn("❌ No filter buttons or project cards found.");
+        return;
+    }
 
-  function showProjects(filter) {
-    let visible = 0;
+    function showProjects(filter) {
+        let visible = 0;
 
-    projects.forEach(card => {
-      const match = filter === "all" || card.dataset.category === filter;
+        projects.forEach(card => {
+            const match = filter === "all" || card.dataset.category === filter;
 
-      if (filter === "all") {
-        if (visible < 6) {
-          card.classList.remove("hide");
-          card.classList.add("show");
-          visible++;
-        } else {
-          card.classList.remove("show");
-          card.classList.add("hide");
-        }
-      } else {
-        if (match) {
-          card.classList.remove("hide");
-          card.classList.add("show");
-        } else {
-          card.classList.remove("show");
-          card.classList.add("hide");
-        }
-      }
+            if (filter === "all") {
+                if (visible < 6) {
+                    card.classList.remove("hide");
+                    card.classList.add("show");
+                    visible++;
+                } else {
+                    card.classList.remove("show");
+                    card.classList.add("hide");
+                }
+            } else {
+                if (match) {
+                    card.classList.remove("hide");
+                    card.classList.add("show");
+                } else {
+                    card.classList.remove("show");
+                    card.classList.add("hide");
+                }
+            }
+        });
+    }
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            filterButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            showProjects(btn.dataset.filter);
+        });
     });
-  }
 
-  filterButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      filterButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      showProjects(btn.dataset.filter);
-    });
-  });
-
-  // DEFAULT → ONLY 6 PROJECTS
-  showProjects("all");
+    // DEFAULT → ONLY 6 PROJECTS
+    showProjects("all");
 }
 
 document.addEventListener("DOMContentLoaded", initProjectFilters);
@@ -599,14 +620,50 @@ function initParticleEffect() {
 // Initialize particle effect
 initParticleEffect();
 
-// Certificates functionality - open PDF on click
+// Shared preview context: 'cert' | 'resume'
+let currentPreviewContext = 'cert';
+
+// Certificates functionality - hover preview & click to open
 function initCertificates() {
     const certItems = document.querySelectorAll('.cert-item');
+    const previewOverlay = document.getElementById('certPreviewOverlay');
+    const previewFrame = document.getElementById('certPreviewFrame');
+    const closeBtn = document.getElementById('certPreviewClose');
+    const openBtn = document.getElementById('certPreviewOpenBtn');
 
-    if (certItems.length === 0) return;
+    if (certItems.length === 0 || !previewOverlay || !previewFrame) return;
 
+    // Function to show preview (certificates + resume share this)
+    function showPreview(pdfPath) {
+        if (pdfPath) {
+            const encodedPath = encodeURI(pdfPath);
+            // Show overlay immediately with loading state
+            previewOverlay.classList.add('active');
+            previewOverlay.classList.add('loading');
+            // Reset src so reload always fires
+            previewFrame.src = '';
+            previewFrame.src = encodedPath;
+        }
+    }
+
+    // Function to hide preview
+    function hidePreview() {
+        previewOverlay.classList.remove('active');
+        previewOverlay.classList.remove('loading');
+        setTimeout(() => {
+            previewFrame.src = '';
+        }, 250);
+    }
+
+    // When PDF finishes loading, remove loading state
+    if (previewFrame) {
+        previewFrame.addEventListener('load', function () {
+            previewOverlay.classList.remove('loading');
+        });
+    }
+
+    // Click functionality for each certificate - show preview
     certItems.forEach(certItem => {
-        // Ensure we only add the listener once and only on actual clicks
         certItem.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -614,21 +671,75 @@ function initCertificates() {
             const pdfPath = this.getAttribute('data-pdf');
 
             if (pdfPath) {
-                // Encode the path to handle spaces and special characters
-                const encodedPath = encodeURI(pdfPath);
-
-                // Show notification first
-                showNotification('Opening certificate PDF...', 'success');
-
-                // Wait 1 seconds before opening the PDF
-                setTimeout(() => {
-                    // Open PDF in a new tab
-                    window.open(encodedPath, '_blank');
-                }, 700);
+                // Set context to certificate and button label
+                currentPreviewContext = 'cert';
+                const labelSpan = document.querySelector('#certPreviewOpenBtn span');
+                if (labelSpan) {
+                    labelSpan.textContent = 'Open Full Certificate';
+                }
+                showPreview(pdfPath);
             } else {
                 showNotification('Certificate PDF not found', 'error');
             }
-        }, { once: false, passive: false });
+        });
+    });
+
+    // Click outside preview to close
+    previewOverlay.addEventListener('click', function (e) {
+        if (e.target === previewOverlay) {
+            hidePreview();
+        }
+    });
+
+    // Close button - close preview
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            previewOverlay.classList.remove('active');
+            setTimeout(() => {
+                previewFrame.src = '';
+            }, 250);
+        });
+    }
+
+    // Open button - open PDF in new tab or download (for resume)
+    if (openBtn) {
+        openBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const currentSrc = previewFrame.src;
+            if (currentSrc) {
+                if (currentPreviewContext === 'resume') {
+                    // Try to force a direct file download (best effort across desktop & mobile)
+                    const link = document.createElement('a');
+                    link.href = currentSrc;
+                    link.download = 'Er. Tarun Kumar Rathore.pdf';
+                    // no target => browsers more likely to treat as download
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    hidePreview();
+                } else {
+                    // Certificate: open in new tab
+                    window.open(currentSrc, '_blank', 'noopener,noreferrer');
+                    showNotification('Opening full certificate...', 'success');
+                    hidePreview();
+                }
+            }
+        });
+    }
+
+    // Click on overlay background (outside container) - close preview
+    previewOverlay.addEventListener('click', function (e) {
+        if (e.target === previewOverlay) {
+            hidePreview();
+        }
+    });
+
+    // ESC key to close preview
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && previewOverlay.classList.contains('active')) {
+            hidePreview();
+        }
     });
 }
 
@@ -681,49 +792,49 @@ function initNumberAnimation() {
 }
 
 function initScrollToTop() {
-  const scrollToTopBtn = document.getElementById('scrollToTop');
-  if (!scrollToTopBtn) return;
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    if (!scrollToTopBtn) return;
 
-  // Show/hide button
-  window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) {
-      scrollToTopBtn.classList.add('visible');
-    } else {
-      scrollToTopBtn.classList.remove('visible');
+    // Show/hide button
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    });
+
+    // Smooth scroll function
+    function scrollToTop() {
+        const start = window.scrollY;
+        const startTime = performance.now();
+        const duration = window.innerWidth <= 768 ? 350 : 900; // faster mobile scroll
+
+        function easeOutQuad(t) {
+            return t * (2 - t);
+        }
+
+        function animateScroll(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = easeOutQuad(progress);
+            window.scrollTo(0, start * (1 - eased));
+            if (progress < 1) requestAnimationFrame(animateScroll);
+        }
+
+        requestAnimationFrame(animateScroll);
     }
-  });
 
-  // Smooth scroll function
-  function scrollToTop() {
-    const start = window.scrollY;
-    const startTime = performance.now();
-    const duration = window.innerWidth <= 768 ? 350 : 900; // faster mobile scroll
+    // ✅ Desktop Click
+    scrollToTopBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollToTop();
+    });
 
-    function easeOutQuad(t) {
-      return t * (2 - t);
-    }
-
-    function animateScroll(now) {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = easeOutQuad(progress);
-      window.scrollTo(0, start * (1 - eased));
-      if (progress < 1) requestAnimationFrame(animateScroll);
-    }
-
-    requestAnimationFrame(animateScroll);
-  }
-
-  // ✅ Desktop Click
-  scrollToTopBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    scrollToTop();
-  });
-
-  // ✅ Mobile Tap — completely instant, no hold delay
-  scrollToTopBtn.addEventListener('touchstart', (e) => {
-    scrollToTop();
-  }, { passive: true });
+    // ✅ Mobile Tap — completely instant, no hold delay
+    scrollToTopBtn.addEventListener('touchstart', (e) => {
+        scrollToTop();
+    }, { passive: true });
 }
 
 

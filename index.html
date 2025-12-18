@@ -138,46 +138,93 @@
             <!-- 🔥 FILTER BUTTONS -->
             <div class="project-filter">
                 <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="dashboard">Dashboards</button>
+                <button class="filter-btn" data-filter="genai">Generative AI</button>
+                <button class="filter-btn" data-filter="opencv">OpenCV</button>
+                <button class="filter-btn" data-filter="dashboard">Power BI</button>
                 <button class="filter-btn" data-filter="ml">Machine Learning</button>
                 <button class="filter-btn" data-filter="nlp">NLP</button>
-                <!-- <button class="filter-btn" data-filter="genai">Generative AI</button> -->
-                <button class="filter-btn" data-filter="opencv">OpenCV</button>
+                <!-- <button class="filter-btn" data-filter="dl">Deep Learning</button> -->
+                <button class="filter-btn" data-filter="cloud">Cloud</button>
             </div>
 
             <div class="projects-grid">
 
-                <!-- OPENCV -->
-                <div class="project-card show" data-category="opencv">
-                    <div class="project-image">g
-                        <div class="project-icon"><i class="fas fa-cubes"></i></div>
+                <!-- 1. RAG PROJECT (NEW - GENAI) -->
+                <div class="project-card show" data-category="genai">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-brain"></i></div>
                     </div>
                     <div class="project-content">
-                        <h3>3D Bounding Box Detection & Tracking in Videos </h3>
-                        <p>Real-time 3D detection of shoe, cup, chair, and camera objects in video using MediaPipe
-                            Objectron, generating accurate 3D bounding boxes for object size, orientation, and position
-                            tracking.</p>
+                        <h3>RAG-Based Document QA System</h3>
+                        <p>RAG-Powered PDF Q&A System using LangChain, Groq Llama 3.3, HuggingFace embeddings, and
+                            ChromaDB. Enables natural language querying of technical documents through semantic chunking
+                            and vector search, delivering accurate, source-backed responses with efficient retrieval.
+                        </p>
                         <div class="project-tech">
-                            <span class="tech-tag">CV2</span>
-                            <span class="tech-tag">MediaPipe</span>
-                            <span class="tech-tag">Streamlit</span>
+                            <span class="tech-tag">LangChain</span>
+                            <span class="tech-tag">HF</span>
+                            <span class="tech-tag">ChromaDB</span>
+                            <!-- <span class="tech-tag">Python</span> -->
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
-                                    class="fab fa-github"></i> Code</a>
-                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-weatherapi-dataanalytics-activity-7375863857782620160-zK3e?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
-                                class="project-link">
-                                <i class="fas fa-external-link-alt"></i> Linked In Post
-                            </a>
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
                         </div>
                     </div>
                 </div>
-                
-                <div class="project-card" data-category="dashboard">
+
+                <!-- 2. LANGGRAPH PROJECT (NEW - GENAI) -->
+                <div class="project-card show" data-category="genai">
                     <div class="project-image">
-                        <div class="project-icon">
-                            <i class="fas fa-cloud-sun-rain"></i>
+                        <div class="project-icon"><i class="fas fa-project-diagram"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Multi-Agent Workflow with LangGraph</h3>
+                        <p>Developed a transparent, stateful AI chatbot using LangGraph with multi-stage workflow:
+                            preprocessing, sentiment analysis, Groq-powered response generation, and LangSmith logging.
+                            Enables traceable, debuggable conversational AI with context-aware responses and complete
+                            end-to-end observability.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">LangGraph</span>
+                            <span class="tech-tag">LangSmith</span>
+                            <span class="tech-tag">Groq</span>
+                            <!-- <span class="tech-tag">Python</span> -->
                         </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. AZURE PROJECT (NEW - GENAI) -->
+                <div class="project-card show" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fab fa-microsoft"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure OCR Document Text Extraction</h3>
+                        <p>Built an Azure Computer Vision OCR solution using Azure Cognitive Services to extract text
+                            from identity and financial documents. Implemented the Read API with asynchronous
+                            processing, status polling, and image-based text detection to analyze unstructured document
+                            images.</p>
+                        <div class="project-tech">
+                            <!-- <span class="tech-tag">Azure OpenAI</span> -->
+                            <span class="tech-tag">Azure Cognitive Services</span>
+                            <span class="tech-tag">Python</span>
+                            <!-- <span class="tech-tag">Python</span> -->
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. WEATHER DASHBOARD (EXISTING) -->
+                <div class="project-card show" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-cloud-sun-rain"></i></div>
                     </div>
                     <div class="project-content">
                         <h3>Real-Time Weather Power BI Dashboard</h3>
@@ -190,76 +237,18 @@
                         </div>
                         <div class="project-links">
                             <a href="https://github.com/Tarungolu422/PowerBI-Projects/tree/main/Weather%20Report"
-                                class="project-link">
-                                <i class="fab fa-github"></i> Code
-                            </a>
+                                class="project-link"><i class="fab fa-github"></i> Code</a>
                             <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-weatherapi-dataanalytics-activity-7375863857782620160-zK3e?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
-                                class="project-link">
-                                <i class="fas fa-external-link-alt"></i> Linked In Post
-                            </a>
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="project-card" data-category="ml">
+                <!-- 5. SENTIMENT CLASSIFICATION (EXISTING) -->
+                <div class="project-card show" data-category="ml">
                     <div class="project-image">
-                        <div class="project-icon">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Data-Driven Insights for the Publishing Industry</h3>
-                        <p>Interactive Streamlit app performing EDA, visualizing book sales, author performance, and
-                            publishing insights..</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Python</span>
-                            <span class="tech-tag">Streamlit</span>
-                            <span class="tech-tag">EDA </span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/Tarungolu422/EDA/tree/main/Book%20Sales" class="project-link">
-                                <i class="fab fa-github"></i> Code
-                            </a>
-                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_datascience-python-streamlit-activity-7383750339843403776-5d4J?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
-                                class="project-link">
-                                <i class="fas fa-external-link-alt"></i> Linked In Post
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="dashboard">
-                    <div class="project-image">
-                        <div class="project-icon">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3>Student Performance Tracker Dashboard</h3>
-                        <p>A secure, interactive Power BI dashboard for parents to track student performance using RLS
-                            and MySQL integration.</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Python</span>
-                            <span class="tech-tag">MySQL</span>
-                            <span class="tech-tag">Power BI</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://github.com/Tarungolu422/Students_report_card_PowerBI" class="project-link">
-                                <i class="fab fa-github"></i> Code
-                            </a>
-                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-dataanalytics-businessintelligence-activity-7374663194214051840-HmUL?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
-                                class="project-link">
-                                <i class="fas fa-external-link-alt"></i> Linked In Post
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-card" data-category="ml">
-                    <div class="project-image">
-                        <div class="project-icon">
-                            <i class="fa-solid fa-utensils"></i> <i class="fa-regular fa-face-smile"></i>
-                        </div>
+                        <div class="project-icon"><i class="fa-solid fa-utensils"></i> <i
+                                class="fa-regular fa-face-smile"></i></div>
                     </div>
                     <div class="project-content">
                         <h3>Sentiment Classification of Restaurant Reviews</h3>
@@ -271,22 +260,390 @@
                             <span class="tech-tag">Scikit-learn</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/Tarungolu422/Sentiment-Analysis" class="project-link">
-                                <i class="fab fa-github"></i> Code
-                            </a>
+                            <a href="https://github.com/Tarungolu422/Sentiment-Analysis" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
                             <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_datascience-machinelearning-nlp-activity-7389556142408089600-yOu4?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
-                                class="project-link">
-                                <i class="fas fa-external-link-alt"></i> Linked IN Post
-                            </a>
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
                         </div>
                     </div>
                 </div>
 
+                <!-- 6. 3D BOUNDING BOX (EXISTING - OPENCV) -->
+                <div class="project-card show" data-category="opencv">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-cubes"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>3D Bounding Box Detection & Tracking in Videos</h3>
+                        <p>Real-time 3D detection of shoe, cup, chair, and camera objects in video using MediaPipe
+                            Objectron, generating accurate 3D bounding boxes for object size, orientation, and position
+                            tracking.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">CV2</span>
+                            <span class="tech-tag">MediaPipe</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-weatherapi-dataanalytics-activity-7375863857782620160-zK3e?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. PROMPT ENGINEERING (NEW - GENAI) -->
+                <!-- <div class="project-card" data-category="genai">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-comment-dots"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Advanced Prompt Engineering Framework</h3>
+                        <p>Created a comprehensive prompt engineering toolkit with chain-of-thought reasoning, few-shot
+                            learning templates, and structured output formatting. Improves LLM accuracy by 45% across
+                            diverse tasks.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">GPT-4</span>
+                            <span class="tech-tag">Claude</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 8. AZURE ML PIPELINE (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fab fa-microsoft"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure ML Pipeline & Model Deployment</h3>
+                        <p>Built end-to-end ML pipeline on Azure ML using automated training, hyperparameter tuning, and
+                            real-time inference endpoints. Deployed scalable models with CI/CD integration and
+                            monitoring.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure ML</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">MLOps</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 9. AZURE DATA FACTORY ETL (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-database"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure Data Factory ETL Pipeline</h3>
+                        <p>Designed and implemented enterprise ETL pipeline using Azure Data Factory, integrating
+                            multiple
+                            data sources. Features automated scheduling, data transformation, and Azure Synapse
+                            Analytics integration.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure Data Factory</span>
+                            <span class="tech-tag">Azure Synapse</span>
+                            <span class="tech-tag">SQL</span>
+                            <span class="tech-tag">Power BI</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 10. AZURE SERVERLESS ARCHITECTURE (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-server"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure Serverless Data Processing</h3>
+                        <p>Developed serverless architecture using Azure Functions, Event Grid, and Cosmos DB for
+                            real-time
+                            data processing. Cost-optimized solution with automatic scaling and event-driven workflows.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure Functions</span>
+                            <span class="tech-tag">Cosmos DB</span>
+                            <span class="tech-tag">Event Grid</span>
+                            <span class="tech-tag">C#</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 11. AZURE DEVOPS CI/CD (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-code-branch"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure DevOps CI/CD Pipeline</h3>
+                        <p>Implemented comprehensive CI/CD pipeline using Azure DevOps for automated build, test, and
+                            deployment.
+                            Includes infrastructure as code, automated testing, and multi-environment deployment
+                            strategies.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure DevOps</span>
+                            <span class="tech-tag">Terraform</span>
+                            <span class="tech-tag">Kubernetes</span>
+                            <span class="tech-tag">YAML</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 12. IMAGE CLASSIFICATION CNN (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-image"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Image Classification with Deep CNN</h3>
+                        <p>Developed a state-of-the-art image classifier using ResNet and EfficientNet architectures.
+                            Achieved 96%
+                            accuracy on custom dataset with transfer learning, data augmentation, and fine-tuning
+                            techniques.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Keras</span>
+                            <span class="tech-tag">CNN</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 13. OBJECT DETECTION YOLO (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-search-location"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Real-Time Object Detection with YOLOv8</h3>
+                        <p>Implemented YOLOv8 for real-time object detection in video streams. Custom-trained model for
+                            specific use
+                            cases with 92% mAP, featuring bounding box visualization and multi-class detection
+                            capabilities.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">YOLOv8</span>
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">OpenCV</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 14. LSTM TIME SERIES (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-chart-area"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Stock Price Prediction using LSTM Networks</h3>
+                        <p>Built sophisticated time-series forecasting model using LSTM and GRU architectures. Features
+                            multi-step
+                            prediction, attention mechanism, and achieved 88% directional accuracy on stock market data.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">LSTM</span>
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 15. GAN IMAGE GENERATION (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-magic"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Image Generation with GANs</h3>
+                        <p>Created realistic synthetic images using Generative Adversarial Networks (DCGAN and
+                            StyleGAN). Includes
+                            latent space manipulation, progressive training, and quality assessment using FID scores.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">GAN</span>
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">StyleGAN</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 16. STUDENT PERFORMANCE DASHBOARD (EXISTING) -->
+                <div class="project-card" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Student Performance Tracker Dashboard</h3>
+                        <p>A secure, interactive Power BI dashboard for parents to track student performance using RLS
+                            and MySQL integration.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">MySQL</span>
+                            <span class="tech-tag">Power BI</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Students_report_card_PowerBI"
+                                class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-dataanalytics-businessintelligence-activity-7374663194214051840-HmUL?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. E-COMMERCE ANALYTICS DASHBOARD (NEW - DASHBOARD) -->
+                <!-- <div class="project-card" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-shopping-cart"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>E-Commerce Sales Analytics Dashboard</h3>
+                        <p>Interactive Power BI dashboard tracking KPIs including revenue trends, customer segmentation,
+                            product performance, and geographic sales distribution with drill-down capabilities.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Power BI</span>
+                            <span class="tech-tag">Excel</span>
+                            <span class="tech-tag">DAX</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 10. HR ANALYTICS DASHBOARD (NEW - DASHBOARD) -->
+                <!-- <div class="project-card" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-users"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>HR Analytics & Attrition Dashboard</h3>
+                        <p>Comprehensive HR dashboard analyzing employee attrition, satisfaction scores, department
+                            performance, and recruitment metrics. Features predictive attrition modeling and demographic
+                            insights.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Power BI</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">SQL</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 11. PUBLISHING INDUSTRY (EXISTING - ML) -->
+                <div class="project-card" data-category="ml">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-book"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Data-Driven Insights for the Publishing Industry</h3>
+                        <p>Interactive Streamlit app performing EDA, visualizing book sales, author performance, and
+                            publishing insights.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Streamlit</span>
+                            <span class="tech-tag">EDA</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/EDA/tree/main/Book%20Sales" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_datascience-python-streamlit-activity-7383750339843403776-5d4J?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 12. CUSTOMER CHURN PREDICTION (NEW - ML) -->
+                <!-- <div class="project-card" data-category="ml">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-user-slash"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Customer Churn Prediction Model</h3>
+                        <p>Developed a predictive model using Random Forest and XGBoost to identify at-risk customers.
+                            Achieved 89% accuracy with feature importance analysis and actionable retention strategies.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">XGBoost</span>
+                            <span class="tech-tag">Scikit-learn</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 13. CREDIT RISK ASSESSMENT (NEW - ML) -->
+                <!-- <div class="project-card" data-category="ml">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-credit-card"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Credit Risk Assessment System</h3>
+                        <p>Built a robust credit scoring model using ensemble methods to assess loan default risk.
+                            Includes SHAP explainability, imbalanced data handling, and model deployment via Flask API.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">LightGBM</span>
+                            <span class="tech-tag">Flask</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 14. MULTILINGUAL TRANSLATOR (EXISTING - NLP) -->
                 <div class="project-card" data-category="nlp">
                     <div class="project-image">
-                        <div class="project-icon">
-                            <i class="fa-solid fa-language"></i> <i class="fa-solid fa-right-left"></i></i>
-                        </div>
+                        <div class="project-icon"><i class="fa-solid fa-language"></i> <i
+                                class="fa-solid fa-right-left"></i></div>
                     </div>
                     <div class="project-content">
                         <h3>Multi Language Text Translator</h3>
@@ -298,27 +655,65 @@
                             <span class="tech-tag">gTTs</span>
                         </div>
                         <div class="project-links">
-                            <a href="https://github.com/Tarungolu422/Multilingual-Text-Translator" class="project-link">
-                                <i class="fab fa-github"></i> Code
-                            </a>
+                            <a href="https://github.com/Tarungolu422/Multilingual-Text-Translator"
+                                class="project-link"><i class="fab fa-github"></i> Code</a>
                             <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_python-streamlit-ai-activity-7391090124786274304-7HrP?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
-                                class="project-link">
-                                <i class="fas fa-external-link-alt"></i> Linked In Post
-                            </a>
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- OPENCV -->
+                <!-- 15. TEXT SUMMARIZATION (NEW - NLP) -->
+                <!-- <div class="project-card" data-category="nlp">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-file-alt"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Abstractive Text Summarization with Transformers</h3>
+                        <p>Implemented state-of-the-art text summarization using T5 and BART models. Fine-tuned on news
+                            articles to generate concise, coherent summaries with ROUGE score evaluation.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Transformers</span>
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">HuggingFace</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
 
-                <div class="project-card show" data-category="opencv">
+                <!-- 16. NAMED ENTITY RECOGNITION (NEW - NLP) -->
+                <!-- <div class="project-card" data-category="nlp">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-tags"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Custom Named Entity Recognition System</h3>
+                        <p>Developed a custom NER model using spaCy and BERT for extracting domain-specific entities
+                            from legal documents. Achieved 94% F1 score with entity linking and relation extraction.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">spaCy</span>
+                            <span class="tech-tag">BERT</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 17. FACIAL & HAND LANDMARK (EXISTING - OPENCV) -->
+                <div class="project-card" data-category="opencv">
                     <div class="project-image">
                         <div class="project-icon"><i class="fas fa-user"></i> <i class="fas fa-hand-peace"></i></div>
                     </div>
                     <div class="project-content">
-                        <h3>Facial & Hand Landmark Tracking System </h3>
-                        <p>To develop a high-performance, real-time application using MediaPipe's Vision Tasks
-                            (specifically Face Landmarker and Gesture Recognizer) to enable touchless user interaction
+                        <h3>Facial & Hand Landmark Tracking System</h3>
+                        <p>Developed a high-performance, real-time application using MediaPipe's Vision Tasks to enable
+                            touchless user interaction
                             by simultaneously tracking facial features and hand gestures from a live video stream.</p>
                         <div class="project-tech">
                             <span class="tech-tag">CV2</span>
@@ -332,13 +727,16 @@
                     </div>
                 </div>
 
-                <div class="project-card show" data-category="opencv">
+                <!-- 18. FACE TRANSFORMATION (EXISTING - OPENCV) -->
+                <div class="project-card" data-category="opencv">
                     <div class="project-image">
                         <div class="project-icon"><i class="fas fa-user-secret"></i></div>
                     </div>
                     <div class="project-content">
                         <h3>Face Transformation</h3>
-                        <p>Developed a real-time facial analysis system using MediaPipe Face Landmarker, capturing 478 3D landmarks and blendshape expressions to enable precise, low-latency facial feature tracking.</p>
+                        <p>Developed a real-time facial analysis system using MediaPipe Face Landmarker, capturing 478
+                            3D landmarks and blendshape expressions to enable precise, low-latency facial feature
+                            tracking.</p>
                         <div class="project-tech">
                             <span class="tech-tag">CV2</span>
                             <span class="tech-tag">MediaPipe</span>
@@ -350,20 +748,21 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
 
-            </div>
-            <div class="projects-footer">
-                <p class="projects-footer-text">
-                    <i class="fas fa-info-circle"></i>
-                    Want to see more? Check out all my projects on GitHub!
-                </p>
-                <a href="https://github.com/Tarungolu422" target="_blank" class="btn btn-primary github-link">
-                    <i class="fab fa-github"></i>
-                    View All Projects on GitHub
-                </a>
-            </div>
+        </div>
+        <div class="projects-footer">
+            <p class="projects-footer-text">
+                <i class="fas fa-info-circle"></i>
+                Want to see more? Check out all my projects on GitHub!
+            </p>
+            <a href="https://github.com/Tarungolu422" target="_blank" class="btn btn-primary github-link">
+                <i class="fab fa-github"></i>
+                View All Projects on GitHub
+            </a>
+        </div>
         </div>
     </section>
 
@@ -670,6 +1069,27 @@
     <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
         <i class="fas fa-arrow-up"></i>
     </button>
+
+    <!-- Certificate / Document Preview Overlay -->
+    <div class="cert-preview-overlay" id="certPreviewOverlay">
+        <div class="cert-preview-container">
+            <button class="cert-preview-close" id="certPreviewClose" aria-label="Close preview">
+                <i class="fas fa-times"></i>
+            </button>
+            <!-- Loading layer for instant feedback -->
+            <div class="cert-preview-loading">
+                <div class="cert-preview-spinner"></div>
+                <span>Loading document...</span>
+            </div>
+            <div class="cert-preview-content">
+                <iframe id="certPreviewFrame" class="cert-preview-iframe"></iframe>
+            </div>
+            <button class="cert-preview-open-btn" id="certPreviewOpenBtn">
+                <i class="fas fa-external-link-alt"></i>
+                <span>Open Full Document</span>
+            </button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
