@@ -1,873 +1,1202 @@
-// Initialize EmailJS early
-(function () {
-    if (typeof emailjs !== 'undefined') {
-        emailjs.init('O_ciyEh_y9ZLeTCWp');
-    }
-})();
+<!DOCTYPE html>
+<html lang="en">
 
-// DOM Content Loaded
-document.addEventListener('DOMContentLoaded', function () {
-    // Initialize all functionality
-    initNavigation();
-    initScrollAnimations();
-    initSkillBars();
-    initContactForm();
-    initResumeDownload();
-    initProjectCards();
-    initTypingEffect();
-    initCertificates();
-    initNumberAnimation();
-    initScrollToTop();
-});
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarun Kumar Rathore - Data Scientist & Generative AI Enthusiast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- EmailJS SDK for sending email notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+</head>
 
-// Send visit notification email on page load  currently off
-// window.addEventListener('load', function () {
-//     sendVisitNotification();
-// });
-
-// Navigation functionality
-function initNavigation() {
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
-    const menuClose = document.querySelector('.menu-close');
-    const menuBackdrop = document.querySelector('.menu-backdrop');
-
-    // Function to open menu
-    function openMenu() {
-        hamburger.classList.add('active');
-        navMenu.classList.add('active');
-        menuBackdrop.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    // Function to close menu
-    function closeMenu() {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        menuBackdrop.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    // Mobile menu toggle
-    hamburger.addEventListener('click', function () {
-        if (navMenu.classList.contains('active')) {
-            closeMenu();
-        } else {
-            openMenu();
-        }
-    });
-
-    // Close button click
-    if (menuClose) {
-        menuClose.addEventListener('click', function (e) {
-            e.stopPropagation();
-            closeMenu();
-        });
-    }
-
-    // Close menu when clicking on backdrop
-    if (menuBackdrop) {
-        menuBackdrop.addEventListener('click', function () {
-            closeMenu();
-        });
-    }
-
-    // Close mobile menu when clicking on a link
-    navLinks.forEach(link => {
-        link.addEventListener('click', function () {
-            closeMenu();
-        });
-    });
-
-    // Smooth scroll for navigation links
-    navLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-
-            if (targetSection) {
-                const offsetTop = targetSection.offsetTop - 80;
-                window.scrollTo({
-                    top: offsetTop,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-
-    // Navbar background on scroll
-    window.addEventListener('scroll', function () {
-        const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 100) {
-            navbar.style.background = 'rgba(10, 10, 10, 0.98)';
-        } else {
-            navbar.style.background = 'rgba(10, 10, 10, 0.95)';
-        }
-    });
-}
-
-// Scroll animations
-function initScrollAnimations() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver(function (entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, observerOptions);
-
-    // Observe sections for fade-in animation
-    const sections = document.querySelectorAll('section:not(.hero)');
-    sections.forEach(section => {
-        section.classList.add('fade-in');
-        observer.observe(section);
-    });
-
-    // Observe elements for animation
-    const animateElements = document.querySelectorAll('.project-card, .skill-item, .stat, .contact-method, .cert-item');
-    animateElements.forEach(el => {
-        el.classList.add('fade-in');
-        observer.observe(el);
-    });
-}
-
-// Skill bars animation (removed - using card-based design now)
-function initSkillBars() {
-    // Skill items will animate via scroll animations instead
-    // No longer needed since we removed progress bars
-}
-
-// Contact form functionality
-function initContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    const formSuccess = document.getElementById('form-success');
-
-    contactForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        // Get form data
-        const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const message = formData.get('message');
-
-        // Basic validation
-        if (!name || !email || !message) {
-            showNotification('Please fill in all fields', 'error');
-            return;
-        }
-
-        if (!isValidEmail(email)) {
-            showNotification('Please enter a valid email address', 'error');
-            return;
-        }
-
-        // Show loading state
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-        submitBtn.disabled = true;
-
-        // Submit to Web3Forms
-        fetch(contactForm.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Form submission failed');
-                }
-            })
-            .then(data => {
-                if (data.success) {
-                    handleFormSuccess();
-                } else {
-                    throw new Error(data.message || 'Form submission failed');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Fallback to mailto if Web3Forms fails
-                const emailSubject = encodeURIComponent(`New Contact from ${name} - Portfolio Website`);
-                const emailBody = encodeURIComponent(`Hello Tarun,
-
-You have received a new message from your portfolio website:
-
-Name: ${name}
-Email: ${email}
-
-Message:
-${message}
-
----
-This message was sent from your portfolio contact form.`);
-
-                const mailtoLink = `mailto:tarun422rathore@gmail.com?subject=${emailSubject}&body=${emailBody}`;
-                window.location.href = mailtoLink;
-                handleFormSuccess();
-            })
-            .finally(() => {
-                resetSubmitButton(submitBtn, originalText);
-            });
-    });
-
-    function handleFormSuccess() {
-        // Show success message
-        formSuccess.style.display = 'flex';
-        contactForm.reset();
-        showNotification('Thanks for reaching out! I\'ll get back to you soon.', 'success');
-
-        // Scroll to success message
-        formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-        // Hide success message after 5 seconds
-        setTimeout(() => {
-            formSuccess.style.display = 'none';
-        }, 5000);
-    }
-
-    function resetSubmitButton(submitBtn, originalText) {
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }
-}
-
-// Email validation
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-// Notification system
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-            <span>${message}</span>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo/nav-logo.png" alt="Tarun Kumar Rathore Logo" class="logo-img">
+                <h2>Portfolio</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-menu-header">
+                    <h3>Menu</h3>
+                    <button class="menu-close" aria-label="Close menu">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#projects" class="nav-link">Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#skills" class="nav-link">Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#certifications" class="nav-link">Certifications</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#resume" class="nav-link">Resume</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
         </div>
-    `;
-
-    // Add styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: ${type === 'success' ? 'linear-gradient(135deg, #00d4aa, #0099cc)' : type === 'error' ? 'linear-gradient(135deg, #ff6b6b, #ee5a24)' : 'linear-gradient(135deg, #0066ff, #00d4aa)'};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        z-index: 10000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        max-width: 400px;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500;
-    `;
-
-    document.body.appendChild(notification);
-
-    // Animate in
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 0);
-
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 1500);
-}
-
-// Resume download functionality
-function initResumeDownload() {
-    const downloadBtn = document.getElementById('downloadBtn');
-    const previewOverlay = document.getElementById('certPreviewOverlay');
-    const previewFrame = document.getElementById('certPreviewFrame');
-
-    if (!downloadBtn) return;
-
-    downloadBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        if (!previewOverlay || !previewFrame) {
-            // Fallback: direct download if preview overlay is missing
-            const link = document.createElement('a');
-            link.href = 'resume/Er. Tarun Kumar Rathore.pdf';
-            link.download = 'Er. Tarun Kumar Rathore.pdf';
-            link.target = '_blank';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            return;
-        }
-
-        const pdfPath = 'resume/Er. Tarun Kumar Rathore.pdf';
-        const encodedPath = encodeURI(pdfPath);
-
-        // Set context to resume and adjust button label
-        currentPreviewContext = 'resume';
-        const labelSpan = document.querySelector('#certPreviewOpenBtn span');
-        if (labelSpan) {
-            labelSpan.textContent = 'Download Resume (PDF)';
-        }
-
-        // Show shared preview overlay in loading state (no page lock)
-        previewOverlay.classList.add('active');
-        previewOverlay.classList.add('loading');
-
-        // Reset src so load event always fires
-        previewFrame.src = '';
-        previewFrame.src = encodedPath;
-    });
-}
-
-// Project cards interaction
-function initProjectCards() {
-    const projectCards = document.querySelectorAll('.project-card');
-
-    projectCards.forEach(card => {
-        card.addEventListener('mouseenter', function () {
-            this.style.transform = 'translateY(-10px) scale(1.02)';
-        });
-
-        card.addEventListener('mouseleave', function () {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-    });
-}
-
-// in below edit 
-function initProjectFilters() {
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    const projects = document.querySelectorAll(".project-card");
-
-    if (!filterButtons.length || !projects.length) {
-        console.warn("❌ No filter buttons or project cards found.");
-        return;
-    }
-
-    function showProjects(filter) {
-        let visible = 0;
-
-        projects.forEach(card => {
-            const match = filter === "all" || card.dataset.category === filter;
-
-            if (filter === "all") {
-                if (visible < 6) {
-                    card.classList.remove("hide");
-                    card.classList.add("show");
-                    visible++;
-                } else {
-                    card.classList.remove("show");
-                    card.classList.add("hide");
-                }
-            } else {
-                if (match) {
-                    card.classList.remove("hide");
-                    card.classList.add("show");
-                } else {
-                    card.classList.remove("show");
-                    card.classList.add("hide");
-                }
-            }
-        });
-    }
-
-    filterButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            filterButtons.forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            showProjects(btn.dataset.filter);
-        });
-    });
-
-    // DEFAULT → ONLY 6 PROJECTS
-    showProjects("all");
-}
-
-document.addEventListener("DOMContentLoaded", initProjectFilters);
-
-//  edit completely
-
-// Typing animation effect for hero subtitle
-function initTypingEffect() {
-    const subtitleText = document.querySelector('.subtitle-text');
-    if (!subtitleText) return;
-
-    const titles = [
-        'Delivering Scalable ML & Agentic AI Solutions',
-        'AI & Data Science Professional',
-        'Generative AI Engineer',
-        'Data Analyst Specialist',
-        'Power BI Developer',
-        'SQL-Driven Solutions'
-    ];
-
-    let currentIndex = 0;
-    let isDeleting = false;
-    let currentText = '';
-    let charIndex = 0;
-
-    function typeText() {
-        const currentTitle = titles[currentIndex];
-
-        if (!isDeleting && charIndex < currentTitle.length) {
-            // Typing forward
-            currentText = currentTitle.substring(0, charIndex + 1);
-            subtitleText.textContent = currentText;
-            charIndex++;
-            setTimeout(typeText, 100);
-        } else if (!isDeleting && charIndex === currentTitle.length) {
-            // Finished typing, wait before deleting
-            setTimeout(() => {
-                isDeleting = true;
-                typeText();
-            }, 2000); // Wait 2 seconds before deleting
-        } else if (isDeleting && charIndex > 0) {
-            // Deleting backward
-            currentText = currentTitle.substring(0, charIndex - 1);
-            subtitleText.textContent = currentText;
-            charIndex--;
-            setTimeout(typeText, 50); // Faster deletion
-        } else if (isDeleting && charIndex === 0) {
-            // Finished deleting, move to next title
-            isDeleting = false;
-            currentIndex = (currentIndex + 1) % titles.length;
-            setTimeout(typeText, 500); // Brief pause before next title
-        }
-    }
-
-    // Start typing animation after initial delay
-    setTimeout(() => {
-        typeText();
-    }, 1000);
-}
-
-// Parallax effect for floating elements
-function initParallaxEffect() {
-    const floatingElements = document.querySelectorAll('.element');
-
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const rate = scrolled * -0.5;
-
-        floatingElements.forEach((element, index) => {
-            const speed = (index + 1) * 0.1;
-            element.style.transform = `translateY(${rate * speed}px)`;
-        });
-    });
-}
-
-// Initialize parallax effect
-initParallaxEffect();
-
-// Smooth scroll for all anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            const offsetTop = target.offsetTop - 80;
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// Add loading animation
-window.addEventListener('load', function () {
-    document.body.classList.add('loaded');
-
-    // Add a subtle fade-in effect to the entire page
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
-});
-
-// Add scroll progress indicator
-function initScrollProgress() {
-    const progressBar = document.createElement('div');
-    progressBar.className = 'scroll-progress';
-    progressBar.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 0%;
-        height: 3px;
-        background: linear-gradient(135deg, #00d4aa, #0099cc);
-        z-index: 10000;
-        transition: width 0.1s ease;
-    `;
-    document.body.appendChild(progressBar);
-
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.pageYOffset;
-        const docHeight = document.body.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        progressBar.style.width = scrollPercent + '%';
-    });
-}
-
-// Initialize scroll progress
-initScrollProgress();
-
-// Add particle effect for hero section
-function initParticleEffect() {
-    const heroSection = document.querySelector('.hero');
-    const canvas = document.createElement('canvas');
-    canvas.style.cssText = `
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    `;
-    heroSection.appendChild(canvas);
-
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-        canvas.width = heroSection.offsetWidth;
-        canvas.height = heroSection.offsetHeight;
-    }
-
-    function createParticle() {
-        return {
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5,
-            size: Math.random() * 2 + 1,
-            opacity: Math.random() * 0.5 + 0.2
-        };
-    }
-
-    function initParticles() {
-        particles = [];
-        for (let i = 0; i < 50; i++) {
-            particles.push(createParticle());
-        }
-    }
-
-    function updateParticles() {
-        particles.forEach(particle => {
-            particle.x += particle.vx;
-            particle.y += particle.vy;
-
-            if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-            if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-        });
-    }
-
-    function drawParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(particle => {
-            ctx.beginPath();
-            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 212, 170, ${particle.opacity})`;
-            ctx.fill();
-        });
-    }
-
-    function animate() {
-        updateParticles();
-        drawParticles();
-        requestAnimationFrame(animate);
-    }
-
-    resizeCanvas();
-    initParticles();
-    animate();
-
-    window.addEventListener('resize', () => {
-        resizeCanvas();
-        initParticles();
-    });
-}
-
-// Initialize particle effect
-initParticleEffect();
-
-// Shared preview context: 'cert' | 'resume'
-let currentPreviewContext = 'cert';
-
-// Certificates functionality - hover preview & click to open
-function initCertificates() {
-    const certItems = document.querySelectorAll('.cert-item');
-    const previewOverlay = document.getElementById('certPreviewOverlay');
-    const previewFrame = document.getElementById('certPreviewFrame');
-    const closeBtn = document.getElementById('certPreviewClose');
-    const openBtn = document.getElementById('certPreviewOpenBtn');
-
-    if (certItems.length === 0 || !previewOverlay || !previewFrame) return;
-
-    // Function to show preview (certificates + resume share this)
-    function showPreview(pdfPath) {
-        if (pdfPath) {
-            const encodedPath = encodeURI(pdfPath);
-            // Show overlay immediately with loading state
-            previewOverlay.classList.add('active');
-            previewOverlay.classList.add('loading');
-            // Reset src so reload always fires
-            previewFrame.src = '';
-            previewFrame.src = encodedPath;
-        }
-    }
-
-    // Function to hide preview
-    function hidePreview() {
-        previewOverlay.classList.remove('active');
-        previewOverlay.classList.remove('loading');
-        setTimeout(() => {
-            previewFrame.src = '';
-        }, 250);
-    }
-
-    // When PDF finishes loading, remove loading state
-    if (previewFrame) {
-        previewFrame.addEventListener('load', function () {
-            previewOverlay.classList.remove('loading');
-        });
-    }
-
-    // Click functionality for each certificate - show preview
-    certItems.forEach(certItem => {
-        certItem.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const pdfPath = this.getAttribute('data-pdf');
-
-            if (pdfPath) {
-                // Set context to certificate and button label
-                currentPreviewContext = 'cert';
-                const labelSpan = document.querySelector('#certPreviewOpenBtn span');
-                if (labelSpan) {
-                    labelSpan.textContent = 'Open Full Certificate';
-                }
-                showPreview(pdfPath);
-            } else {
-                showNotification('Certificate PDF not found', 'error');
-            }
-        });
-    });
-
-    // Click outside preview to close
-    previewOverlay.addEventListener('click', function (e) {
-        if (e.target === previewOverlay) {
-            hidePreview();
-        }
-    });
-
-    // Close button - close preview
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            previewOverlay.classList.remove('active');
-            setTimeout(() => {
-                previewFrame.src = '';
-            }, 250);
-        });
-    }
-
-    // Open button - open PDF in new tab or download (for resume)
-    if (openBtn) {
-        openBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const currentSrc = previewFrame.src;
-            if (currentSrc) {
-                if (currentPreviewContext === 'resume') {
-                    // Try to force a direct file download (best effort across desktop & mobile)
-                    const link = document.createElement('a');
-                    link.href = currentSrc;
-                    link.download = 'Er. Tarun Kumar Rathore.pdf';
-                    // no target => browsers more likely to treat as download
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    hidePreview();
-                } else {
-                    // Certificate: open in new tab
-                    window.open(currentSrc, '_blank', 'noopener,noreferrer');
-                    showNotification('Opening full certificate...', 'success');
-                    hidePreview();
-                }
-            }
-        });
-    }
-
-    // Click on overlay background (outside container) - close preview
-    previewOverlay.addEventListener('click', function (e) {
-        if (e.target === previewOverlay) {
-            hidePreview();
-        }
-    });
-
-    // ESC key to close preview
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && previewOverlay.classList.contains('active')) {
-            hidePreview();
-        }
-    });
-}
-
-// Number animation (count-up effect) for stats
-function initNumberAnimation() {
-    const stats = document.querySelectorAll('.stat h3');
-
-    const animateNumber = (element, target, duration = 2000) => {
-        const start = 0;
-        const increment = target / (duration / 16); // 60fps
-        let current = start;
-
-        const updateNumber = () => {
-            current += increment;
-            if (current < target) {
-                element.textContent = Math.floor(current) + '+';
-                requestAnimationFrame(updateNumber);
-            } else {
-                element.textContent = target + '+';
-            }
-        };
-
-        updateNumber();
-    };
-
-    // Create intersection observer for stats
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.dataset.animated) {
-                const statElement = entry.target;
-                const text = statElement.textContent.trim();
-                const number = parseInt(text);
-
-                if (!isNaN(number)) {
-                    statElement.dataset.animated = 'true';
-                    statElement.textContent = '0+';
-                    animateNumber(statElement, number, 2000);
-                }
-            }
-        });
-    }, {
-        threshold: 0.5,
-        rootMargin: '0px'
-    });
-
-    // Observe all stat numbers
-    stats.forEach(stat => {
-        statsObserver.observe(stat);
-    });
-}
-
-function initScrollToTop() {
-    const scrollToTopBtn = document.getElementById('scrollToTop');
-    if (!scrollToTopBtn) return;
-
-    // Show/hide button
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            scrollToTopBtn.classList.add('visible');
-        } else {
-            scrollToTopBtn.classList.remove('visible');
-        }
-    });
-
-    // Smooth scroll function
-    function scrollToTop() {
-        const start = window.scrollY;
-        const startTime = performance.now();
-        const duration = window.innerWidth <= 768 ? 350 : 900; // faster mobile scroll
-
-        function easeOutQuad(t) {
-            return t * (2 - t);
-        }
-
-        function animateScroll(now) {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = easeOutQuad(progress);
-            window.scrollTo(0, start * (1 - eased));
-            if (progress < 1) requestAnimationFrame(animateScroll);
-        }
-
-        requestAnimationFrame(animateScroll);
-    }
-
-    // ✅ Desktop Click
-    scrollToTopBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        scrollToTop();
-    });
-
-    // ✅ Mobile Tap — completely instant, no hold delay
-    scrollToTopBtn.addEventListener('touchstart', (e) => {
-        scrollToTop();
-    }, { passive: true });
-}
-
-
-
-// Send visit notification email  ----- currently off 
-function sendVisitNotification() {
-    // Check if EmailJS is loaded
-    if (typeof emailjs === 'undefined') {
-        console.warn('EmailJS is not loaded. Visit notification will not be sent.');
-        return;
-    }
-
-    // EmailJS configuration
-    const EMAILJS_SERVICE_ID = 'service_ad42fbc';
-    const EMAILJS_TEMPLATE_ID = 'template_jfcj8er';
-
-    // Get visit time
-    const visitTime = new Date().toLocaleString();
-
-    // Prepare email template parameters
-    const templateParams = {
-        date: visitTime,
-        visitor: 'New visitor accessed your portfolio page.'
-    };
-
-    // Send email (silently, without user interaction)
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-        .then(function (response) {
-            console.log('Visit email sent successfully!', response.status, response.text);
-        })
-        .catch(function (error) {
-            console.error('Failed to send visit email:', error);
-            // Fail silently - don't show error to visitors
-        });
-}
-
+        <div class="menu-backdrop"></div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Hi, I'm <span class="highlight">Tarun Kumar Rathore</span>
+                </h1>
+                <h2 class="hero-subtitle">
+                    <span class="subtitle-text">Data Science Expert</span>
+                </h2>
+                <p class="hero-description">
+                    I specialise in building end-to-end machine learning and generative-AI systems that convert raw data
+                    into business insights and automation.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#projects" class="btn btn-primary">View My Work</a>
+                    <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="floating-elements">
+                    <div class="element element-1"></div>
+                    <div class="element element-2"></div>
+                    <div class="element element-3"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        I’m a Data Scientist and Generative AI Engineer passionate about creating data-driven,
+                        autonomous AI solutions that address complex business challenges. My expertise spans finance,
+                        e-commerce, and customer analytics, where I design intelligent systems that transform data into
+                        meaningful and actionable insights.
+                    </p>
+                    <p>
+                        I've built and deployed predictive and generative AI models that boost performance, improve
+                        decision-making, and enable intelligent automation. With a strong foundation in Machine
+                        Learning, Deep Learning, and Agentic AI, I focus on delivering solutions that create measurable
+                        business impact.
+                    </p>
+                    <p>
+                        By applying advanced predictive and generative architectures, my goal is to enhance efficiency,
+                        speed up decisions, and drive digital transformation. I'm driven to build AI systems that solve
+                        today's problems and evolve for tomorrow's innovations.
+                    </p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat">
+                        <h3>20+</h3>
+                        <p>Projects Completed</p>
+                    </div>
+                    <div class="stat">
+                        <h3>10+</h3>
+                        <p>Certifications</p>
+                    </div>
+                    <div class="stat">
+                        <h3>10+</h3>
+                        <p>Technologies Mastered</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2 class="section-title">Featured Projects</h2>
+
+            <!-- 🔥 FILTER BUTTONS -->
+            <div class="project-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="genai">Generative AI</button>
+                <button class="filter-btn" data-filter="opencv">OpenCV</button>
+                <button class="filter-btn" data-filter="dashboard">Power BI</button>
+                <button class="filter-btn" data-filter="ml">Machine Learning</button>
+                <button class="filter-btn" data-filter="nlp">NLP</button>
+                <!-- <button class="filter-btn" data-filter="dl">Deep Learning</button> -->
+                <button class="filter-btn" data-filter="cloud">Cloud</button>
+            </div>
+
+            <div class="projects-grid">
+
+                <!-- 1. RAG PROJECT (NEW - GENAI) -->
+                <div class="project-card show" data-category="genai">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-brain"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>RAG-Based Document QA System</h3>
+                        <p>RAG-Powered PDF Q&A System using LangChain, Groq Llama 3.3, HuggingFace embeddings, and
+                            ChromaDB. Enables natural language querying of technical documents through semantic chunking
+                            and vector search, delivering accurate, source-backed responses with efficient retrieval.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">LangChain</span>
+                            <span class="tech-tag">HF</span>
+                            <span class="tech-tag">ChromaDB</span>
+                            <!-- <span class="tech-tag">Python</span> -->
+                        </div>
+                        <div class="project-links">
+                            <!-- <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. LANGGRAPH PROJECT (NEW - GENAI) -->
+                <div class="project-card show" data-category="genai">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-project-diagram"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Multi-Agent Workflow with LangGraph</h3>
+                        <p>Developed a transparent, stateful AI chatbot using LangGraph with multi-stage workflow:
+                            preprocessing, sentiment analysis, Groq-powered response generation, and LangSmith logging.
+                            Enables traceable, debuggable conversational AI with context-aware responses and complete
+                            end-to-end observability.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">LangGraph</span>
+                            <span class="tech-tag">LangSmith</span>
+                            <span class="tech-tag">Groq</span>
+                            <!-- <span class="tech-tag">Python</span> -->
+                        </div>
+                        <div class="project-links">
+                            <!-- <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a> -->
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_artificialintelligence-generativeai-langgraph-activity-7406917329969745922-9Iou?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. AZURE PROJECT (NEW - GENAI) -->
+                <div class="project-card show" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fab fa-microsoft"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure OCR Document Text Extraction</h3>
+                        <p>Built an Azure Computer Vision OCR solution using Azure Cognitive Services to extract text
+                            from identity and financial documents. Implemented the Read API with asynchronous
+                            processing, status polling, and image-based text detection to analyze unstructured document
+                            images.</p>
+                        <div class="project-tech">
+                            <!-- <span class="tech-tag">Azure OpenAI</span> -->
+                            <span class="tech-tag">Azure Cognitive Services</span>
+                            <span class="tech-tag">Python</span>
+                            <!-- <span class="tech-tag">Python</span> -->
+                        </div>
+                        <div class="project-links">
+                            <!-- <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. WEATHER DASHBOARD (EXISTING) -->
+                <div class="project-card show" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-cloud-sun-rain"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Real-Time Weather Power BI Dashboard</h3>
+                        <p>Developed a real-time Power BI weather dashboard using live API data and advanced DAX
+                            formulas, enabling automatic refresh and instant insights.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Power BI</span>
+                            <span class="tech-tag">API</span>
+                            <span class="tech-tag">DAX</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/PowerBI-Projects/tree/main/Weather%20Report"
+                                class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-weatherapi-dataanalytics-activity-7375863857782620160-zK3e?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. SENTIMENT CLASSIFICATION (EXISTING) -->
+                <div class="project-card show" data-category="ml">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fa-solid fa-utensils"></i> <i
+                                class="fa-regular fa-face-smile"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Sentiment Classification of Restaurant Reviews</h3>
+                        <p>Compared 9 machine learning models for sentiment classification; optimized SVM achieved 97.5%
+                            accuracy and 0.9978 AUC, automating review analysis and improving efficiency by 40%.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">NLP</span>
+                            <span class="tech-tag">Scikit-learn</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Sentiment-Analysis" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_datascience-machinelearning-nlp-activity-7389556142408089600-yOu4?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. 3D BOUNDING BOX (EXISTING - OPENCV) -->
+                <div class="project-card show" data-category="opencv">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-cubes"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>3D Bounding Box Detection & Tracking in Videos</h3>
+                        <p>Real-time 3D detection of shoe, cup, chair, and camera objects in video using MediaPipe
+                            Objectron, generating accurate 3D bounding boxes for object size, orientation, and position
+                            tracking.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">CV2</span>
+                            <span class="tech-tag">MediaPipe</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-weatherapi-dataanalytics-activity-7375863857782620160-zK3e?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. PROMPT ENGINEERING (NEW - GENAI) -->
+                <!-- <div class="project-card" data-category="genai">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-comment-dots"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Advanced Prompt Engineering Framework</h3>
+                        <p>Created a comprehensive prompt engineering toolkit with chain-of-thought reasoning, few-shot
+                            learning templates, and structured output formatting. Improves LLM accuracy by 45% across
+                            diverse tasks.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">GPT-4</span>
+                            <span class="tech-tag">Claude</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 7. PROMPT ENGINEERING (NEW - GENAI) -->
+                <div class="project-card" data-category="genai">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-comment-dots"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Gemma-2B Quote Generator: Fine-Tuning </h3>
+                        <p>I fine-tuned Google’s Gemma-2B into a specialized Quote Generator using LoRA and FP16
+                            precision. After hitting resource limits on Colab, I migrated the workflow to Kaggle’s dual
+                            Tesla T4 GPUs, successfully resolving library conflicts and implementing secure API
+                            management via Kaggle Secrets.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">LoRA</span>
+                            <span class="tech-tag">Gemma-2B</span>
+                            <span class="tech-tag">FP16</span>
+                            <span class="tech-tag">Hugging Face Transformers</span>
+                        </div>
+                        <div class="project-links">
+                            <!-- <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a> -->
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_generativeai-gemma-kaggle-activity-7408816173443715073-dFji?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. AZURE ML PIPELINE (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fab fa-microsoft"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure ML Pipeline & Model Deployment</h3>
+                        <p>Built end-to-end ML pipeline on Azure ML using automated training, hyperparameter tuning, and
+                            real-time inference endpoints. Deployed scalable models with CI/CD integration and
+                            monitoring.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure ML</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">MLOps</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 9. AZURE DATA FACTORY ETL (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-database"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure Data Factory ETL Pipeline</h3>
+                        <p>Designed and implemented enterprise ETL pipeline using Azure Data Factory, integrating
+                            multiple
+                            data sources. Features automated scheduling, data transformation, and Azure Synapse
+                            Analytics integration.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure Data Factory</span>
+                            <span class="tech-tag">Azure Synapse</span>
+                            <span class="tech-tag">SQL</span>
+                            <span class="tech-tag">Power BI</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 10. AZURE SERVERLESS ARCHITECTURE (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-server"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure Serverless Data Processing</h3>
+                        <p>Developed serverless architecture using Azure Functions, Event Grid, and Cosmos DB for
+                            real-time
+                            data processing. Cost-optimized solution with automatic scaling and event-driven workflows.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure Functions</span>
+                            <span class="tech-tag">Cosmos DB</span>
+                            <span class="tech-tag">Event Grid</span>
+                            <span class="tech-tag">C#</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 11. AZURE DEVOPS CI/CD (NEW - CLOUD) -->
+                <!-- <div class="project-card" data-category="cloud">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-code-branch"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Azure DevOps CI/CD Pipeline</h3>
+                        <p>Implemented comprehensive CI/CD pipeline using Azure DevOps for automated build, test, and
+                            deployment.
+                            Includes infrastructure as code, automated testing, and multi-environment deployment
+                            strategies.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Azure DevOps</span>
+                            <span class="tech-tag">Terraform</span>
+                            <span class="tech-tag">Kubernetes</span>
+                            <span class="tech-tag">YAML</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 12. IMAGE CLASSIFICATION CNN (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-image"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Image Classification with Deep CNN</h3>
+                        <p>Developed a state-of-the-art image classifier using ResNet and EfficientNet architectures.
+                            Achieved 96%
+                            accuracy on custom dataset with transfer learning, data augmentation, and fine-tuning
+                            techniques.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Keras</span>
+                            <span class="tech-tag">CNN</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 13. OBJECT DETECTION YOLO (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-search-location"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Real-Time Object Detection with YOLOv8</h3>
+                        <p>Implemented YOLOv8 for real-time object detection in video streams. Custom-trained model for
+                            specific use
+                            cases with 92% mAP, featuring bounding box visualization and multi-class detection
+                            capabilities.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">YOLOv8</span>
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">OpenCV</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 14. LSTM TIME SERIES (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-chart-area"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Stock Price Prediction using LSTM Networks</h3>
+                        <p>Built sophisticated time-series forecasting model using LSTM and GRU architectures. Features
+                            multi-step
+                            prediction, attention mechanism, and achieved 88% directional accuracy on stock market data.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">LSTM</span>
+                            <span class="tech-tag">TensorFlow</span>
+                            <span class="tech-tag">Pandas</span>
+                            <span class="tech-tag">NumPy</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 15. GAN IMAGE GENERATION (NEW - DL) -->
+                <!-- <div class="project-card" data-category="dl">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-magic"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Image Generation with GANs</h3>
+                        <p>Created realistic synthetic images using Generative Adversarial Networks (DCGAN and
+                            StyleGAN). Includes
+                            latent space manipulation, progressive training, and quality assessment using FID scores.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">GAN</span>
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">StyleGAN</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 16. STUDENT PERFORMANCE DASHBOARD (EXISTING) -->
+                <div class="project-card" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Student Performance Tracker Dashboard</h3>
+                        <p>A secure, interactive Power BI dashboard for parents to track student performance using RLS
+                            and MySQL integration.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">MySQL</span>
+                            <span class="tech-tag">Power BI</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Students_report_card_PowerBI"
+                                class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_powerbi-dataanalytics-businessintelligence-activity-7374663194214051840-HmUL?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. E-COMMERCE ANALYTICS DASHBOARD (NEW - DASHBOARD) -->
+                <!-- <div class="project-card" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-shopping-cart"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>E-Commerce Sales Analytics Dashboard</h3>
+                        <p>Interactive Power BI dashboard tracking KPIs including revenue trends, customer segmentation,
+                            product performance, and geographic sales distribution with drill-down capabilities.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Power BI</span>
+                            <span class="tech-tag">Excel</span>
+                            <span class="tech-tag">DAX</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 10. HR ANALYTICS DASHBOARD (NEW - DASHBOARD) -->
+                <!-- <div class="project-card" data-category="dashboard">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-users"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>HR Analytics & Attrition Dashboard</h3>
+                        <p>Comprehensive HR dashboard analyzing employee attrition, satisfaction scores, department
+                            performance, and recruitment metrics. Features predictive attrition modeling and demographic
+                            insights.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Power BI</span>
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">SQL</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 11. PUBLISHING INDUSTRY (EXISTING - ML) -->
+                <div class="project-card" data-category="ml">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-book"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Data-Driven Insights for the Publishing Industry</h3>
+                        <p>Interactive Streamlit app performing EDA, visualizing book sales, author performance, and
+                            publishing insights.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Streamlit</span>
+                            <span class="tech-tag">EDA</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/EDA/tree/main/Book%20Sales" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_datascience-python-streamlit-activity-7383750339843403776-5d4J?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 12. CUSTOMER CHURN PREDICTION (NEW - ML) -->
+                <!-- <div class="project-card" data-category="ml">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-user-slash"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Customer Churn Prediction Model</h3>
+                        <p>Developed a predictive model using Random Forest and XGBoost to identify at-risk customers.
+                            Achieved 89% accuracy with feature importance analysis and actionable retention strategies.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">XGBoost</span>
+                            <span class="tech-tag">Scikit-learn</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 13. CREDIT RISK ASSESSMENT (NEW - ML) -->
+                <!-- <div class="project-card" data-category="ml">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-credit-card"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Credit Risk Assessment System</h3>
+                        <p>Built a robust credit scoring model using ensemble methods to assess loan default risk.
+                            Includes SHAP explainability, imbalanced data handling, and model deployment via Flask API.
+                        </p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">LightGBM</span>
+                            <span class="tech-tag">Flask</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 14. MULTILINGUAL TRANSLATOR (EXISTING - NLP) -->
+                <div class="project-card" data-category="nlp">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fa-solid fa-language"></i> <i
+                                class="fa-solid fa-right-left"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Multi Language Text Translator</h3>
+                        <p>A lightweight AI app that combines NLP and speech synthesis to translate and speak text in
+                            60+ languages, making global communication effortless.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">mtranslate</span>
+                            <span class="tech-tag">gTTs</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Multilingual-Text-Translator"
+                                class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="https://www.linkedin.com/posts/tarun-kumar-rathore-3012a4246_python-streamlit-ai-activity-7391090124786274304-7HrP?utm_source=share&utm_medium=member_desktop&rcm=ACoAADzpPrEBKOyqt0XRFBZi-u-QYThEVQenlbw"
+                                class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 15. TEXT SUMMARIZATION (NEW - NLP) -->
+                <!-- <div class="project-card" data-category="nlp">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-file-alt"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Abstractive Text Summarization with Transformers</h3>
+                        <p>Implemented state-of-the-art text summarization using T5 and BART models. Fine-tuned on news
+                            articles to generate concise, coherent summaries with ROUGE score evaluation.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Transformers</span>
+                            <span class="tech-tag">PyTorch</span>
+                            <span class="tech-tag">HuggingFace</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 16. NAMED ENTITY RECOGNITION (NEW - NLP) -->
+                <!-- <div class="project-card" data-category="nlp">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-tags"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Custom Named Entity Recognition System</h3>
+                        <p>Developed a custom NER model using spaCy and BERT for extracting domain-specific entities
+                            from legal documents. Achieved 94% F1 score with entity linking and relation extraction.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">spaCy</span>
+                            <span class="tech-tag">BERT</span>
+                            <span class="tech-tag">Python</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i> LinkedIn Post</a>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- 17. FACIAL & HAND LANDMARK (EXISTING - OPENCV) -->
+                <div class="project-card" data-category="opencv">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-user"></i> <i class="fas fa-hand-peace"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Facial & Hand Landmark Tracking System</h3>
+                        <p>Developed a high-performance, real-time application using MediaPipe's Vision Tasks to enable
+                            touchless user interaction
+                            by simultaneously tracking facial features and hand gestures from a live video stream.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">CV2</span>
+                            <span class="tech-tag">MediaPipe</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 18. FACE TRANSFORMATION (EXISTING - OPENCV) -->
+                <div class="project-card" data-category="opencv">
+                    <div class="project-image">
+                        <div class="project-icon"><i class="fas fa-user-secret"></i></div>
+                    </div>
+                    <div class="project-content">
+                        <h3>Face Transformation</h3>
+                        <p>Developed a real-time facial analysis system using MediaPipe Face Landmarker, capturing 478
+                            3D landmarks and blendshape expressions to enable precise, low-latency facial feature
+                            tracking.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">CV2</span>
+                            <span class="tech-tag">MediaPipe</span>
+                            <span class="tech-tag">Streamlit</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://github.com/Tarungolu422/Mediapipe-Projects" class="project-link"><i
+                                    class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="projects-footer">
+            <p class="projects-footer-text">
+                <i class="fas fa-info-circle"></i>
+                Want to see more? Check out all my projects on GitHub!
+            </p>
+            <a href="https://github.com/Tarungolu422" target="_blank" class="btn btn-primary github-link">
+                <i class="fab fa-github"></i>
+                View All Projects on GitHub
+            </a>
+        </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title">Skills & Technologies</h2>
+            <p class="section-subtitle">A comprehensive toolkit for building intelligent solutions</p>
+            <div class="skills-container">
+                <div class="skills-category" data-category="ml">
+                    <div class="category-header">
+                        <div class="category-title-wrapper">
+                            <i class="fas fa-robot category-icon"></i>
+                            <h3>Machine Learning</h3>
+                        </div>
+                        <span class="skill-count">5</span>
+                    </div>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <span class="skill-name">Data Analytics</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <span class="skill-name">Machine Learning</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <span class="skill-name">Natural Language Processing</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <span class="skill-name">Deep Learning</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <span class="skill-name">Scikit-learn</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-category" data-category="genai">
+                    <div class="category-header">
+                        <div class="category-title-wrapper">
+                            <i class="fas fa-magic category-icon"></i>
+                            <h3>Generative AI</h3>
+                        </div>
+                        <span class="skill-count">8</span>
+                    </div>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <span class="skill-name">LangChain</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <span class="skill-name">LangGraph</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <span class="skill-name">Groq</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <span class="skill-name">HuggingFace</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <span class="skill-name">ChromaDB</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <span class="skill-name">LoRA</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <span class="skill-name">Transformers</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <span class="skill-name">RAG</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-category" data-category="programming">
+                    <div class="category-header">
+                        <div class="category-title-wrapper">
+                            <i class="fas fa-code category-icon"></i>
+                            <h3>Programming & Markup</h3>
+                        </div>
+                        <span class="skill-count">4</span>
+                    </div>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fab fa-python"></i>
+                            </div>
+                            <span class="skill-name">Python</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fab fa-html5"></i>
+                            </div>
+                            <span class="skill-name">HTML</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fab fa-css3-alt"></i>
+                            </div>
+                            <span class="skill-name">CSS</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <span class="skill-name">MySQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-category" data-category="tools">
+                    <div class="category-header">
+                        <div class="category-title-wrapper">
+                            <i class="fas fa-tools category-icon"></i>
+                            <h3>Tools & Platforms</h3>
+                        </div>
+                        <span class="skill-count">6</span>
+                    </div>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <span class="skill-name">Microsoft Power BI</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <span class="skill-name">TensorFlow</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <span class="skill-name">Keras</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <span class="skill-name">Google Cloud Platform (GCP)</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <span class="skill-name">MLOps</span>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon">
+                                <i class="fas fa-code-branch"></i>
+                            </div>
+                            <span class="skill-name">CI/CD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section id="certifications" class="certifications">
+        <div class="container">
+            <h2 class="section-title">Certifications</h2>
+            <p class="section-subtitle">10+ industry-recognized certifications across Data Science, ML, DL, and Cloud.
+            </p>
+            <div class="cert-grid">
+                <div class="cert-item" data-pdf="certificates/Code_with_harry_data_science_cerificate.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Code with Harry Data Science</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/Deloitte Virtual Progeam.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Deloitte Virtual Program</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/EY + MICROSOFT.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>EY + MICROSOFT</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/Google python courcera.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Google Python Coursera</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/IBM ML0101EN Certificate _ Cognitive Class (1).pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>IBM ML0101EN Certificate Cognitive Class</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/Oracle data science certificate.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Oracle Data Science Certificate</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/powerbi techtip.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Power BI Techtip</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/Powerbi.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Power BI Course PE</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/Slash mark Tarun Kumar Rathore (1).pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Slash Mark Tarun Kumar Rathore</span>
+                </div>
+                <div class="cert-item" data-pdf="certificates/Udemy data analyst.pdf">
+                    <i class="fas fa-certificate"></i>
+                    <span>Udemy Data Analyst</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Section -->
+    <section id="resume" class="resume">
+        <div class="container">
+            <h2 class="section-title">Resume</h2>
+            <div class="resume-content">
+                <div class="resume-info">
+                    <h3>Download My Resume</h3>
+                    <p>Get a detailed overview of my experience, skills, and achievements in Data Science and Generative
+                        AI.</p>
+                    <div class="resume-features">
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Comprehensive skill breakdown</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Project portfolio highlights</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Professional experience</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Certifications & achievements</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="resume-download">
+                    <a href="#" class="btn btn-primary btn-large" id="downloadBtn">
+                        <i class="fas fa-download"></i>
+                        Download Resume (PDF)
+                    </a>
+                    <p class="download-note">* Resume will be downloaded as a PDF file</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Contact Me</h2>
+            <p class="contact-intro">Let's collaborate or talk about Data Science and AI projects!</p>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Let's Connect</h3>
+                    <p>I'm always interested in discussing new opportunities, collaborations, or just having a chat
+                        about data science and AI.</p>
+
+                    <!-- Social Media Links -->
+                    <div class="social-links">
+                        <a href="https://github.com/Tarungolu422" target="_blank" class="social-link" title="GitHub">
+                            <i class="fab fa-github"></i>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="https://www.linkedin.com/in/tarun-kumar-rathore-3012a4246/" target="_blank"
+                            class="social-link" title="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                            <span>LinkedIn</span>
+                        </a>
+                    </div>
+
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details">
+                                <h4>Email</h4>
+                                <a href="mailto:tarun422rathore@gmail.com?subject=Contact from Portfolio Website"
+                                    class="contact-link email-button">tarun422rathore@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+                    <input type="hidden" name="access_key" value="a2151081-458a-4ea8-9dad-a181374833b4">
+                    <input type="hidden" name="subject" value="New Contact from Portfolio Website">
+                    <input type="hidden" name="from_name" value="Portfolio Contact Form">
+                    <input type="hidden" name="redirect" value="false">
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Message
+                    </button>
+                    <div id="form-success" class="form-success" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Thanks for reaching out! I'll get back to you soon.</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-main">
+                    <p>&copy; 2025 Tarun Kumar Rathore | Data Science & Generative AI Portfolio</p>
+                    <p class="footer-email">📧 Prefer email? Reach me at <a
+                            href="mailto:tarun422rathore@gmail.com?subject=Contact from Portfolio Website">tarun422rathore@gmail.com</a>
+                    </p>
+                </div>
+                <div class="footer-social">
+                    <a href="https://github.com/Tarungolu422" target="_blank" class="footer-social-link" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/tarun-kumar-rathore-3012a4246/" target="_blank"
+                        class="footer-social-link" title="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Certificate / Document Preview Overlay -->
+    <div class="cert-preview-overlay" id="certPreviewOverlay">
+        <div class="cert-preview-container">
+            <button class="cert-preview-close" id="certPreviewClose" aria-label="Close preview">
+                <i class="fas fa-times"></i>
+            </button>
+            <!-- Loading layer for instant feedback -->
+            <div class="cert-preview-loading">
+                <div class="cert-preview-spinner"></div>
+                <span>Loading document...</span>
+            </div>
+            <div class="cert-preview-content">
+                <iframe id="certPreviewFrame" class="cert-preview-iframe"></iframe>
+            </div>
+            <button class="cert-preview-open-btn" id="certPreviewOpenBtn">
+                <i class="fas fa-external-link-alt"></i>
+                <span>Open Full Document</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
